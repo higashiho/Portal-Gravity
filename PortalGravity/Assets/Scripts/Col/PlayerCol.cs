@@ -10,22 +10,26 @@ public class PlayerCol : MonoBehaviour
     {
         player ??= this.GetComponent<PlayerController>();
 
-        if(player.ColObject != other.gameObject)
-               
         if(other.gameObject.tag == "Ground" && !player.IsGrounded)
         {
-            player.ColObject = other.gameObject;
-            //playerの下で当たっていたら
-            if(MethodFactory.GetColDir(other) == Enums.ColDir.DOWN)
+            //playerの重力加速度がない状態で上で当たっていたら
+            if(player.GetComponent<Rigidbody2D>().gravityScale == 0)
             {
-                player.IsGrounded = !player.IsGrounded;
+                if(MethodFactory.GetColDir(other) == Enums.ColDir.UP)
+                {
+                    player.IsGrounded = true;
+                    player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                } 
+            }
+            //playerの重力加速度がある状態で下に当たっていたら
+            else
+            {
+                if(MethodFactory.GetColDir(other) == Enums.ColDir.DOWN)
+                {
+                    player.IsGrounded = true;
+                    player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                }
             }
         }
-    }
-
-    private void OnCollisionExit2D(Collision2D other) 
-    {
-        if(other.gameObject.tag == "Ground")
-            player.ColObject = null;
     }
 }

@@ -15,24 +15,24 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<float> moving = new ReactiveProperty<float>();
     private ReactiveProperty<bool> isChangeGravity = new ReactiveProperty<bool>();
 
-    [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
+    public float MoveSpeed{get => moveSpeed; set{ if(moveSpeed != value) moveSpeed = value;}}
+
+    [SerializeField, Tooltip("接地時の移動スピード")]
+    private float groundedMoveSpeed = default;
+    [SerializeField, Tooltip("ジャンプ時のスピード")]
+    private float jumpingMoveSpeed = default;
 
     [SerializeField, Tooltip("ジャンプ力")]
     private float jumpForce = 5.0f;
+    [SerializeField, Tooltip("地面に触れているか")]
     private bool isGrounded = true;
     public bool IsGrounded{get => isGrounded; set => isGrounded = value;}
+    [SerializeField, Tooltip("次フレームの移動追加値")]
     private Vector3 moveDirection;
 
     [SerializeField, Tooltip("重力変化対象オブジェクト")]
     private GameObject targetGravityBox = default;
-
-    [SerializeField, Tooltip("playerが触れているオブジェクト")]
-    private GameObject colObject = default;
-    public GameObject ColObject{get => colObject; set => colObject = value;}
-
-    // 逆向きの重力スケール
-    private float gravityScale = -1.0f; 
 
     protected void setSubscribe()
     {
@@ -59,6 +59,7 @@ public class BasePlayer : MonoBehaviour
             .ThrottleFirst(TimeSpan.FromSeconds(1))
             .Subscribe(_ =>
             {
+                IsGrounded = !IsGrounded;
                 // ジャンプ処理を実行する
                 jump();
             });
@@ -68,6 +69,11 @@ public class BasePlayer : MonoBehaviour
             .TakeUntilDestroy(this)
             .Subscribe(x =>
             {
+                if(!isGrounded)
+                    MoveSpeed = jumpingMoveSpeed;
+                else
+                    MoveSpeed = groundedMoveSpeed;
+
                 // そっち方向に移動する
                 movement(x);
             });
@@ -75,28 +81,35 @@ public class BasePlayer : MonoBehaviour
         isChangeGravity
             .TakeUntilDestroy(this)
             .Where(x => x)
-            .Subscribe(x =>
+            .Subscribe(async x =>
             {
+                // １秒待つ
+                await UniTask.Delay(1000);
+
+                // 重力変化
                 if(targetGravityBox)
                     //対象の重力変化
-                    changeGravity(targetGravityBox);
+                    MethodFactory.ChangeGravity(targetGravityBox);
                 else
+                {
                     //自身の重力変化
-                    changeGravity(this.gameObject);
+                    MethodFactory.ChangeGravity(this.gameObject);
+                    IsGrounded = !IsGrounded;
+                }
             });
 
-           this.UpdateAsObservable()
+        this.UpdateAsObservable()
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
             { 
                 // 以下重力反転時==============================================================================
-                if(targetGravityBox && targetGravityBox.GetComponent<Rigidbody2D>().gravityScale == 0f)
-                {
-                    moveDirection.y += Physics.gravity.y * Time.deltaTime;
-                }
-                if(this.GetComponent<Rigidbody2D>().gravityScale == 0f && ColObject == null)
+                if(this.GetComponent<Rigidbody2D>().gravityScale == 0f && !IsGrounded)
                 {
                     moveDirection.y += -Physics.gravity.y * Time.deltaTime;
+                }
+                else
+                {
+                    moveDirection.y = 0;
                 }
                 // 以上重力反転時==============================================================================
 
@@ -108,7 +121,7 @@ public class BasePlayer : MonoBehaviour
     //移動
     private void movement(float moveValue)
     {
-        moveDirection.x = moveValue * moveSpeed;
+        moveDirection.x = moveValue * MoveSpeed;
     }
 
     // ジャンプ
@@ -121,10 +134,4 @@ public class BasePlayer : MonoBehaviour
     }
 
 
-    // 重力反転
-    private void changeGravity(GameObject target)
-    {
-        target.GetComponent<Rigidbody2D>().velocity = Vector3.up * jumpForce;
-        target.GetComponent<Rigidbody2D>().gravityScale = 0f;
-    }
 }
