@@ -9,16 +9,23 @@ public class PlayerCol : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D other) 
     {
         player ??= this.GetComponent<PlayerController>();
-            
 
-        if(other.gameObject.name == "yuka" && !player.IsGrounded)
+        if(player.ColObject != other.gameObject)
+               
+        if(other.gameObject.tag == "Ground" && !player.IsGrounded)
         {
+            player.ColObject = other.gameObject;
             //playerの下で当たっていたら
             if(MethodFactory.GetColDir(other) == Enums.ColDir.DOWN)
             {
-                Debug.Log("in");
                 player.IsGrounded = !player.IsGrounded;
             }
         }
+    }
+
+    private void OnCollisionExit2D(Collision2D other) 
+    {
+        if(other.gameObject.tag == "Ground")
+            player.ColObject = null;
     }
 }
