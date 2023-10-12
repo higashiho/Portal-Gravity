@@ -46,7 +46,7 @@ public class testStageMake : MonoBehaviour
                if (num >= 0)
                {
                    
-                   Vector2 spanPos = new Vector2(column, line);
+                   Vector2 spanPos = new Vector2(column - 8.4f, line - 4.5f);
 
                    Instantiate(stagePrefab, spanPos, Quaternion.identity);
                }
