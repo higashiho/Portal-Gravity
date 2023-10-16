@@ -15,18 +15,14 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<float> moving = new ReactiveProperty<float>();
     private ReactiveProperty<bool> isChangeGravity = new ReactiveProperty<bool>();
 
+    [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
     public float MoveSpeed{get => moveSpeed; set{ if(moveSpeed != value) moveSpeed = value;}}
 
-    [SerializeField, Tooltip("接地時の移動スピード")]
-    private float groundedMoveSpeed = default;
-    [SerializeField, Tooltip("ジャンプ時のスピード")]
-    private float jumpingMoveSpeed = default;
-
     [SerializeField, Tooltip("ジャンプ力")]
-    private float jumpForce = 5.0f;
+    private float jumpForce = default;
     [SerializeField, Tooltip("地面に触れているか")]
-    private bool isGrounded = true;
+    private bool isGrounded = default;
     public bool IsGrounded{get => isGrounded; set => isGrounded = value;}
     [SerializeField, Tooltip("次フレームの移動追加値")]
     private Vector3 moveDirection;
@@ -42,7 +38,14 @@ public class BasePlayer : MonoBehaviour
             {
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
-                isChangeGravity.Value = Input.GetMouseButton(0);
+                isChangeGravity.Value = IsGrounded && Input.GetMouseButton(0);
+            });
+
+        this.UpdateAsObservable()
+            .TakeUntilDestroy(this)
+            .Subscribe(_ => 
+            {
+                cstMouseRay();
             });
     }
     // 挙動
@@ -59,7 +62,6 @@ public class BasePlayer : MonoBehaviour
             .ThrottleFirst(TimeSpan.FromSeconds(1))
             .Subscribe(_ =>
             {
-                IsGrounded = !IsGrounded;
                 // ジャンプ処理を実行する
                 jump();
             });
@@ -69,11 +71,6 @@ public class BasePlayer : MonoBehaviour
             .TakeUntilDestroy(this)
             .Subscribe(x =>
             {
-                if(!isGrounded)
-                    MoveSpeed = jumpingMoveSpeed;
-                else
-                    MoveSpeed = groundedMoveSpeed;
-
                 // そっち方向に移動する
                 movement(x);
             });
@@ -83,18 +80,23 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(async x =>
             {
+                var target = targetGravityBox;
                 // １秒待つ
                 await UniTask.Delay(1000);
 
                 // 重力変化
-                if(targetGravityBox)
+                if(target)
+                {
                     //対象の重力変化
-                    MethodFactory.ChangeGravity(targetGravityBox);
+                    if(target.name == "GravityBox")
+                    {
+                        target.GetComponent<GravityBoxController>().CangeGravity();
+                    }   
+                }         
                 else
                 {
                     //自身の重力変化
                     MethodFactory.ChangeGravity(this.gameObject);
-                    IsGrounded = !IsGrounded;
                 }
             });
 
@@ -121,17 +123,41 @@ public class BasePlayer : MonoBehaviour
     //移動
     private void movement(float moveValue)
     {
-        moveDirection.x = moveValue * MoveSpeed;
+        if(!IsGrounded)
+            moveDirection.x = moveValue * MoveSpeed;
+        else
+            moveDirection.x = moveValue * ((int)MoveSpeed << 1);
+
     }
 
     // ジャンプ
     private void jump()
     {
+        moveDirection.x = 0;
+
         if(GetComponent<Rigidbody2D>().gravityScale != 0)
-            this.GetComponent<Rigidbody2D>().velocity = Vector3.up * jumpForce;
+            this.GetComponent<Rigidbody2D>().velocity = Vector2.up *  jumpForce;
         else
-            this.GetComponent<Rigidbody2D>().velocity = Vector3.down * jumpForce;
+            this.GetComponent<Rigidbody2D>().velocity = Vector2.down *  jumpForce;
     }
 
+    // マウスカーソルの位置から「レイ」を飛ばして、何かのコライダーに当たるかどうかをチェック
+    private void cstMouseRay()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        var hit = Physics2D.Raycast(ray.origin, ray.direction);
+        if (hit.collider)
+        {
+            if(hit.collider.gameObject.name == "GravityBox")
+                targetGravityBox = hit.collider.gameObject;
+            else
+                targetGravityBox = null;
+        }
+        else
+        {
+            targetGravityBox = null;
+        }
+    }
 
 }

@@ -22,15 +22,15 @@ public class MethodFactory : MonoBehaviour
             {
                 return Enums.ColDir.DOWN;
             }
-            else if (normal == Vector2.down)
+            if (normal == Vector2.down)
             {
                 return Enums.ColDir.UP;
             }
-            else if (normal == Vector2.right)
+            if (normal == Vector2.right)
             {
                 return Enums.ColDir.RIGHT;
             }
-            else if (normal == Vector2.left)
+            if (normal == Vector2.left)
             {
                 return Enums.ColDir.LEFT;
             }

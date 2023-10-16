@@ -11,6 +11,14 @@ public class Enums
         UP,
         DOWN,
         LEFT,
-        RIGHT
+        RIGHT,
+    }
+
+    public enum PlayerDis
+    {
+        
+        DEFAULT = -1,
+        LEFT,
+        RIGHT,
     }
 }

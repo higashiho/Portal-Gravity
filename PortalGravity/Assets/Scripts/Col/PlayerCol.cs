@@ -6,7 +6,7 @@ public class PlayerCol : MonoBehaviour
 {
     private PlayerController player = default;
 
-    private void OnCollisionEnter2D(Collision2D other) 
+    private void OnCollisionStay2D(Collision2D other) 
     {
         player ??= this.GetComponent<PlayerController>();
 
@@ -17,7 +17,7 @@ public class PlayerCol : MonoBehaviour
             {
                 if(MethodFactory.GetColDir(other) == Enums.ColDir.UP)
                 {
-                    player.IsGrounded = true;
+                    player.IsGrounded = !player.IsGrounded;
                     player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 } 
             }
@@ -26,10 +26,14 @@ public class PlayerCol : MonoBehaviour
             {
                 if(MethodFactory.GetColDir(other) == Enums.ColDir.DOWN)
                 {
-                    player.IsGrounded = true;
+                    player.IsGrounded = !player.IsGrounded;
                     player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 }
             }
         }
+    }
+    private void OnCollisionExit2D(Collision2D other) 
+    {
+        player.IsGrounded = false;
     }
 }
