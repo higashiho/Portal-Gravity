@@ -1,8 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class Enums
 {
     public enum ColDir
@@ -14,11 +9,11 @@ public class Enums
         RIGHT,
     }
 
-    public enum PlayerDis
+    public enum PlayerAbility
     {
         
         DEFAULT = -1,
-        LEFT,
-        RIGHT,
+        GRAVITY,
+        WARP,
     }
 }
