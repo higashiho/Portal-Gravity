@@ -1,13 +1,6 @@
-using System;
-using System.Threading;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
-using Cysharp.Threading.Tasks;
-using TMPro;
-using UnityEditor.EditorTools;
 
 public class BaseGravityBox : MonoBehaviour
 {

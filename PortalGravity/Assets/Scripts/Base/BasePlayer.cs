@@ -1,19 +1,16 @@
 using System;
-using System.Threading;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
-using TMPro;
-using UnityEditor.EditorTools;
 
 public class BasePlayer : MonoBehaviour
 {
     private ReactiveProperty<bool> isJumping = new ReactiveProperty<bool>();
     private ReactiveProperty<float> moving = new ReactiveProperty<float>();
     private ReactiveProperty<bool> isChangeGravity = new ReactiveProperty<bool>();
+    private ReactiveProperty<bool> isWarpBeadShot = new ReactiveProperty<bool>();
+    private ReactiveProperty<bool> isChangeAbility = new ReactiveProperty<bool>();
 
     [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
@@ -30,6 +27,17 @@ public class BasePlayer : MonoBehaviour
     [SerializeField, Tooltip("重力変化対象オブジェクト")]
     private GameObject targetGravityBox = default;
 
+    [SerializeField, Tooltip("重力かワープか")]
+    private Enums.PlayerAbility ability = Enums.PlayerAbility.GRAVITY;
+
+    [SerializeField, Tooltip("弾挙動管理クラス")]
+    protected WarpBeatController warpBead;
+
+    protected void initialize()
+    {
+        warpBead ??= this.transform.GetChild(0).GetComponent<WarpBeatController>();
+    }
+
     protected void setSubscribe()
     {
           this.UpdateAsObservable()
@@ -38,7 +46,9 @@ public class BasePlayer : MonoBehaviour
             {
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
-                isChangeGravity.Value = IsGrounded && Input.GetMouseButton(0);
+                isChangeGravity.Value = ability == Enums.PlayerAbility.GRAVITY && IsGrounded && Input.GetMouseButtonDown(0);
+                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !warpBead.Bead.activeSelf && Input.GetMouseButtonDown(0);
+                isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
             });
 
         this.UpdateAsObservable()
@@ -98,6 +108,27 @@ public class BasePlayer : MonoBehaviour
                     //自身の重力変化
                     MethodFactory.ChangeGravity(this.gameObject);
                 }
+            });
+        
+        isWarpBeadShot
+            .TakeUntilDestroy(this)
+            .Where(x => x)
+            .Subscribe(_ => 
+            {
+
+                shotWarpBead();
+            });
+
+        isChangeAbility
+            .TakeUntilDestroy(this)
+            .Where(x => x)
+            .Subscribe(_ => 
+            {
+                
+                if(ability == Enums.PlayerAbility.GRAVITY)
+                    ability = Enums.PlayerAbility.WARP;
+                else
+                    ability = Enums.PlayerAbility.GRAVITY;
             });
 
         this.UpdateAsObservable()
@@ -160,4 +191,12 @@ public class BasePlayer : MonoBehaviour
         }
     }
 
+    // ワープ弾発射挙動
+    private void shotWarpBead()
+    {
+        warpBead.Bead.SetActive(true);
+        warpBead.Bead.transform.position = this.transform.position;
+
+        warpBead.SetVec.Value = Camera.main.ScreenToWorldPoint(Input.mousePosition).x - this.transform.position.x;
+    }
 }
