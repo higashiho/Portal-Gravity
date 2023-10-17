@@ -6,6 +6,6 @@ public class MapController : BaseMap
 {
     void Start()
     {
-        
+
     }
 }
