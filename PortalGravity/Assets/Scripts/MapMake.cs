@@ -20,8 +20,6 @@ namespace map
     // 読み込まれた文字
     private List<string[]> waveDate = new List<string[]>();
 
-    [SerializeField, Tooltip("横座標数")]
-    private int maxCol = 18;
 
     //[SerializeField]
     //private GameObject player = null;
@@ -53,7 +51,7 @@ namespace map
         {
             for (int row = 0; row < waveDate.Count; row++)
             {
-                for (int col = 0; col < maxCol; col++)
+                for (int col = 0; col < Constant.MAX_COL; col++)
                 {
                     // Noneなら何も置かない
                     if(waveDate[row][col] == "None") continue;
