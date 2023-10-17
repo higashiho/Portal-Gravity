@@ -31,8 +31,11 @@ public class BasePlayer : MonoBehaviour
     private Enums.PlayerAbility ability = Enums.PlayerAbility.GRAVITY;
 
 
-    
-
+    private bool[] isNextStages = new bool[]
+    {
+        false, false, false
+    };
+    public bool[] IsNextStages{get => isNextStages; set => isNextStages = value;}
     protected void initialize()
     {
     }
