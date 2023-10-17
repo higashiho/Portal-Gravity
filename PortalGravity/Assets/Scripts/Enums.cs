@@ -1,3 +1,4 @@
+
 public class Enums
 {
     public enum ColDir
@@ -15,5 +16,14 @@ public class Enums
         DEFAULT = -1,
         GRAVITY,
         WARP,
+    }
+
+    public enum MapNum
+    {
+        DEFAULT = -1,
+        STAGE_1 = 0,
+        STAGE_2,
+        STAGE_3_UP,
+        STAGE_3_DOWN,
     }
 }

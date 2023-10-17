@@ -47,7 +47,7 @@ public class BasePlayer : MonoBehaviour
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeGravity.Value = ability == Enums.PlayerAbility.GRAVITY && IsGrounded && Input.GetMouseButtonDown(0);
-                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !warpBead.Bead.activeSelf && Input.GetMouseButtonDown(0);
+                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !warpBead.Bead.activeSelf && Input.GetMouseButtonUp(0);
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
             });
 
