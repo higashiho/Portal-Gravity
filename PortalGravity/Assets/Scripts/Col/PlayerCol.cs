@@ -27,6 +27,14 @@ public class PlayerCol : MonoBehaviour
             }
         }
     }
+    private void OnTriggerEnter2D(Collider2D other) 
+    {
+        if(other.transform.parent.gameObject.name == "Key")
+        {
+            other.gameObject.SetActive(false);
+            ObjectFactory.Player.IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = true;
+        }   
+    }
     private void OnCollisionExit2D(Collision2D other) 
     {
         ObjectFactory.Player.IsGrounded = false;

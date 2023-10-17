@@ -18,7 +18,7 @@ public class BaseMap : MonoBehaviour
 
     // 現在のplayerがいるステージ
     private ReactiveProperty<Enums.MapNum> updateMapNum = new ReactiveProperty<Enums.MapNum>(Enums.MapNum.STAGE_1);
-    private ReactiveProperty<Enums.MapNum> UpdateMapNum => updateMapNum;
+    public ReactiveProperty<Enums.MapNum> UpdateMapNum => updateMapNum;
 
     protected void setSubscribe()
     {
