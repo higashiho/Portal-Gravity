@@ -30,12 +30,11 @@ public class BasePlayer : MonoBehaviour
     [SerializeField, Tooltip("重力かワープか")]
     private Enums.PlayerAbility ability = Enums.PlayerAbility.GRAVITY;
 
-    [SerializeField, Tooltip("弾挙動管理クラス")]
-    protected WarpBeatController warpBead;
+
+    
 
     protected void initialize()
     {
-        warpBead ??= this.transform.GetChild(0).GetComponent<WarpBeatController>();
     }
 
     protected void setSubscribe()
@@ -47,7 +46,7 @@ public class BasePlayer : MonoBehaviour
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeGravity.Value = ability == Enums.PlayerAbility.GRAVITY && IsGrounded && Input.GetMouseButtonDown(0);
-                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !warpBead.Bead.activeSelf && Input.GetMouseButtonUp(0);
+                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !ObjectFactory.WarpBeat.Bead.activeSelf && Input.GetMouseButtonUp(0);
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
             });
 
@@ -194,9 +193,9 @@ public class BasePlayer : MonoBehaviour
     // ワープ弾発射挙動
     private void shotWarpBead()
     {
-        warpBead.Bead.SetActive(true);
-        warpBead.Bead.transform.position = this.transform.position;
+        ObjectFactory.WarpBeat.Bead.SetActive(true);
+        ObjectFactory.WarpBeat.Bead.transform.position = this.transform.position;
 
-        warpBead.SetVec.Value = Camera.main.ScreenToWorldPoint(Input.mousePosition).x - this.transform.position.x;
+        ObjectFactory.WarpBeat.SetVec.Value = Camera.main.ScreenToWorldPoint(Input.mousePosition).x - this.transform.position.x;
     }
 }
