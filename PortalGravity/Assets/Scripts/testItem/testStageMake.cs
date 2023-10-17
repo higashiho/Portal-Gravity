@@ -5,18 +5,25 @@ using System.IO;
  
 public class testStageMake : MonoBehaviour
 {
-    [SerializeField]
+   [SerializeField]
    private List<string> fileName = new List<string>();
-   int waveNum = 0;
-   TextAsset csvFile;
-   List<string[]> waveDate = new List<string[]>();
-   [SerializeField]
-   private int maxColumn = 10;
-   [SerializeField]
-   private int maxLine = 10;
+
+    [SerializeField]
+   private int waveNum = 0;
+   
+   private TextAsset csvFile;
+
+   private List<string[]> waveDate = new List<string[]>();
 
    [SerializeField]
-   private GameObject stagePrefab = null;
+   private int maxCol = 18;
+
+   //[SerializeField]
+   //private GameObject player = null;
+
+    [SerializeField]
+   private GameObject[] stageItems = new GameObject[10];
+
 
    void Start()
    {
@@ -27,38 +34,40 @@ public class testStageMake : MonoBehaviour
    {
        csvFile = Resources.Load(fileName[waveNum]) as TextAsset;
        
-       StringReader reader = new StringReader(csvFile.text);
-
+       StringReader reader = new StringReader(csvFile.text);    
+       
+       // scvの空白まで読み込む
        while (reader.Peek() != -1)
        {
+        // 文字を読み込む
            string line = reader.ReadLine();
-           waveDate.Add(line.Split(','));
 
-        spawn();
-           
+           // 「 , 」が読み込まれたら、そこまでの文字を１文字とする 
+           waveDate.Add(line.Split(','));
        }
 
-       
+       spawn();
    }
 
     void spawn()
    {
-       for (int line = waveDate.Count; line < 0; line--)
-       {
-           for (int column = 0; column < maxColumn; column++)
-           {
-               int num = int.Parse(waveDate[line][column]);
+        for (int row = 0; row < waveDate.Count; row++)
+        {
+            for (int col = 0; col < maxCol; col++)
+            {
+                // Noneなら何も置かない
+                if(waveDate[row][col] == "None") continue;
 
-               Debug.Log(num);
+                // 何を置くかを読み取る
+                int num = int.Parse(waveDate[row][col]);
 
-               Vector2 spanPos = new Vector2(column - 8.5f, line - waveDate.Count + 5.0f);
-               
-               if (num == 1)
-               {
-                   Instantiate(stagePrefab, spanPos, Quaternion.identity);
-               }
-           }
-       }
-       
+                // 設置座標
+                Vector2 spanPos = new Vector2(col - 8.5f, 5f - row);
+
+                // 設置
+                Instantiate(stageItems[num], spanPos, Quaternion.identity, this.transform);
+
+            }
+        }       
    }
 }
