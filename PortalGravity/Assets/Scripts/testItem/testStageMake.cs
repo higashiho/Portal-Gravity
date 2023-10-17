@@ -12,6 +12,8 @@ public class testStageMake : MonoBehaviour
    List<string[]> waveDate = new List<string[]>();
    [SerializeField]
    private int maxColumn = 10;
+   [SerializeField]
+   private int maxLine = 10;
 
    [SerializeField]
    private GameObject stagePrefab = null;
@@ -31,28 +33,31 @@ public class testStageMake : MonoBehaviour
        {
            string line = reader.ReadLine();
            waveDate.Add(line.Split(','));
+
+        spawn();
+           
        }
 
-       StartCoroutine(spawn());
+       
    }
 
-    IEnumerator spawn()
+    void spawn()
    {
-       for (int line = 0; line < waveDate.Count; line++)
+       for (int line = waveDate.Count; line < 0; line--)
        {
            for (int column = 0; column < maxColumn; column++)
            {
                int num = int.Parse(waveDate[line][column]);
-               if (num >= 0)
-               {
-                   
-                   Vector2 spanPos = new Vector2(column - 8.4f, line - 4.5f);
 
+               Debug.Log(num);
+
+               Vector2 spanPos = new Vector2(column - 8.5f, line - waveDate.Count + 5.0f);
+               
+               if (num == 1)
+               {
                    Instantiate(stagePrefab, spanPos, Quaternion.identity);
                }
            }
-
-           yield return new WaitForSeconds(0.5f);
        }
        
    }
