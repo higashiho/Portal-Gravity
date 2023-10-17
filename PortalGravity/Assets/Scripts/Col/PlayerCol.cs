@@ -1,18 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCol : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    private PlayerController player = default;
 
-    // Update is called once per frame
-    void Update()
+    private void OnCollisionStay2D(Collision2D other) 
     {
-        
+        player ??= this.GetComponent<PlayerController>();
+
+        if(other.gameObject.tag == "Ground" && !player.IsGrounded)
+        {
+            //playerの重力加速度がない状態で上で当たっていたら
+            if(player.GetComponent<Rigidbody2D>().gravityScale == 0)
+            {
+                if(MethodFactory.GetColDir(other) == Enums.ColDir.UP)
+                {
+                    player.IsGrounded = !player.IsGrounded;
+                    player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                } 
+            }
+            //playerの重力加速度がある状態で下に当たっていたら
+            else
+            {
+                if(MethodFactory.GetColDir(other) == Enums.ColDir.DOWN)
+                {
+                    player.IsGrounded = !player.IsGrounded;
+                    player.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                }
+            }
+        }
+    }
+    private void OnCollisionExit2D(Collision2D other) 
+    {
+        player.IsGrounded = false;
     }
 }
