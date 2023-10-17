@@ -2326,7 +2326,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 878262738}
-  - component: {fileID: 878262737}
   m_Layer: 0
   m_Name: StageMakeEO
   m_TagString: Untagged
@@ -2334,29 +2333,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &878262737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 878262736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 19cc4a3bb2fdbb740ae3fd8f1367d5e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fileName:
-  - testStageData
-  waveNum: 0
-  maxCol: 18
-  stageItems:
-  - {fileID: 8965197394569766515, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
-  - {fileID: 4346265660112886716, guid: 82f1840ea0b8bb3488c62359daff0844, type: 3}
-  - {fileID: 4344718706675753756, guid: ae4d396d7047bbe4c8cf1b9a1624e1f3, type: 3}
-  - {fileID: 7967901943506729652, guid: f66340c243b70d64aa161b40df1171dd, type: 3}
-  - {fileID: 4304001624295705207, guid: 3639c5862da52ce42ade4b72217529e3, type: 3}
-  - {fileID: 1665797884167681063, guid: 5259d2d8a0dc1a34f854dfb82fa16f44, type: 3}
 --- !u!4 &878262738
 Transform:
   m_ObjectHideFlags: 0
