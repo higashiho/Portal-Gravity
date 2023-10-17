@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Constant
 {
-    public const float SHOT_GRADIENT = 2.0f;
+    public const float SHOT_MAXPOWER = 5.0f;
 }

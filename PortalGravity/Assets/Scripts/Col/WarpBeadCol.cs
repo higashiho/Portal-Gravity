@@ -14,7 +14,10 @@ public class WarpBeadCol : MonoBehaviour
             ObjectFactory.Player.transform.position = this.transform.position;
             ObjectFactory.Player.transform.position +=  ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale != 0 ? offset : -offset;
 
+            ObjectFactory.WarpBeat.ClearLineRenderer();
+            this.transform.parent = ObjectFactory.Player.transform;
             this.gameObject.SetActive(false);
+
         }
     }
 }

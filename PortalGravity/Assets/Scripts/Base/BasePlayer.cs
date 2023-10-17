@@ -29,6 +29,7 @@ public class BasePlayer : MonoBehaviour
 
     [SerializeField, Tooltip("重力かワープか")]
     private Enums.PlayerAbility ability = Enums.PlayerAbility.GRAVITY;
+    public Enums.PlayerAbility Ability{get => ability;}
 
 
     private bool[] isNextStages = new bool[]
@@ -48,9 +49,18 @@ public class BasePlayer : MonoBehaviour
             {
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
-                isChangeGravity.Value = ability == Enums.PlayerAbility.GRAVITY && IsGrounded && Input.GetMouseButtonDown(0);
-                isWarpBeadShot.Value = ability == Enums.PlayerAbility.WARP && !ObjectFactory.WarpBeat.Bead.activeSelf && Input.GetMouseButtonUp(0);
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
+
+                if(ability == Enums.PlayerAbility.WARP)
+                {
+                    ObjectFactory.WarpBeat.IsShotStart.Value = Input.GetMouseButtonDown(0);
+                    ObjectFactory.WarpBeat.IsChangeForce.SetValueAndForceNotify(Input.GetMouseButton(0));
+                    isWarpBeadShot.Value = !ObjectFactory.WarpBeat.Bead.activeSelf && Input.GetMouseButtonUp(0);
+                }
+                else if(Ability == Enums.PlayerAbility.GRAVITY)
+                {
+                    isChangeGravity.Value = IsGrounded && Input.GetMouseButtonDown(0);
+                }
             });
 
         this.UpdateAsObservable()
@@ -199,6 +209,6 @@ public class BasePlayer : MonoBehaviour
         ObjectFactory.WarpBeat.Bead.SetActive(true);
         ObjectFactory.WarpBeat.Bead.transform.position = this.transform.position;
 
-        ObjectFactory.WarpBeat.SetVec.Value = Camera.main.ScreenToWorldPoint(Input.mousePosition).x - this.transform.position.x;
+        ObjectFactory.WarpBeat.SetVec.Value = ObjectFactory.WarpBeat.Force;
     }
 }
