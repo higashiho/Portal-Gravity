@@ -1,9 +1,13 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class ObjectFactory
 {
-    public static PlayerController Player;
-    public static MapController Map;
-    public static WarpBeatController WarpBeat;
-    public static GravityBoxController GravityBox;
-    public static SpearController Spear;
+    public static ObjectFactory Instance;
+
+    public PlayerController Player;
+    public MapController Map;
+    public WarpBeatController WarpBeat;
+    public GravityBoxController GravityBox;
+    public List<SpearController> Spears = new List<SpearController>();
 }

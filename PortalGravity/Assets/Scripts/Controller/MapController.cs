@@ -1,8 +1,11 @@
 
+using Cysharp.Threading.Tasks;
+
 public class MapController : BaseMap
 {
-    private void Awake() {
-        ObjectFactory.Map = this;
+    private async void Awake() {
+        await UniTask.WaitUntil(() => ObjectFactory.Instance != null);
+        ObjectFactory.Instance.Map = this;
     }
     void Start()
     {

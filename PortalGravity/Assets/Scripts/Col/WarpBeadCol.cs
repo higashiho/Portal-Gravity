@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 public class WarpBeadCol : MonoBehaviour
@@ -11,7 +12,9 @@ public class WarpBeadCol : MonoBehaviour
 
         if(other.gameObject.tag != "Player")
         {
-            ObjectFactory.WarpBeat.Resets(offset);
+            if(ObjectFactory.Instance == null || ObjectFactory.Instance.Player == null) return;
+            
+            ObjectFactory.Instance.WarpBeat.Resets(offset);
 
         }
     }
