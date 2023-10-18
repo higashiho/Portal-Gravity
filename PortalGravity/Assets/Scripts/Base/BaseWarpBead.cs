@@ -10,6 +10,7 @@ public class BaseWarpBead : MonoBehaviour
     protected GameObject bead = default;
     public GameObject Bead => bead;
     private Rigidbody2D rb;
+    public Rigidbody2D Rb => rb;
     private LineRenderer lr;
 
     [SerializeField, Tooltip("打つ強さ")]
@@ -28,7 +29,8 @@ public class BaseWarpBead : MonoBehaviour
     public ReactiveProperty<bool> IsShotStart => isShotStart;
     private ReactiveProperty<bool> isChangeForce = new ReactiveProperty<bool>(false);
     public ReactiveProperty<bool> IsChangeForce => isChangeForce;
-
+    private ReactiveProperty<bool> isOnCamera = new ReactiveProperty<bool>();
+    public ReactiveProperty<bool> IsOnCamera => isOnCamera;
     protected void initialize()
     {
         bead = this.gameObject;
@@ -63,11 +65,30 @@ public class BaseWarpBead : MonoBehaviour
             {
                 setForce();
             });
+
+        IsOnCamera
+            .TakeUntilDestroy(this)
+            .Where(x => !x)
+            .Subscribe(x => 
+            {
+                Resets(Vector3.zero);
+            });
     }
 
-    public void ClearLineRenderer()
+    // 更新時初期化
+    public async void Resets(Vector3 offset)
     {
         lr.positionCount = 0;
+
+        if(offset != Vector3.zero)
+        {
+            ObjectFactory.Player.transform.position = this.transform.position;
+            ObjectFactory.Player.transform.position +=  ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale != 0 ? offset : -offset;
+        }
+        await UniTask.WaitUntil(() => ObjectFactory.Player != null);
+        this.transform.parent = ObjectFactory.Player.transform;
+        this.gameObject.SetActive(false);
+
     }
     private void setStartPos()
     {
@@ -96,6 +117,7 @@ public class BaseWarpBead : MonoBehaviour
         for (int i = 0; i < trajectory.Length; i++)
         {
             positions[i] = trajectory[i];
+
         }
         lr.SetPositions(positions);
     }

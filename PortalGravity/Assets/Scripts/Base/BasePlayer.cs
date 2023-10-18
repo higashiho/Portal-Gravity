@@ -3,6 +3,8 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
+using UnityEngine.SceneManagement;
+using UnityEditor.EditorTools;
 
 public class BasePlayer : MonoBehaviour
 {
@@ -11,6 +13,8 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<bool> isChangeGravity = new ReactiveProperty<bool>();
     private ReactiveProperty<bool> isWarpBeadShot = new ReactiveProperty<bool>();
     private ReactiveProperty<bool> isChangeAbility = new ReactiveProperty<bool>();
+    private ReactiveProperty<bool> isRetry = new ReactiveProperty<bool>();
+    public ReactiveProperty<bool> IsRetry => isRetry;
 
     [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
@@ -31,6 +35,11 @@ public class BasePlayer : MonoBehaviour
     private Enums.PlayerAbility ability = Enums.PlayerAbility.GRAVITY;
     public Enums.PlayerAbility Ability{get => ability;}
 
+    [SerializeField, Tooltip("Retry座標")]
+    private Vector3 retryPos = new Vector3(0,0,0);
+    public Vector3 RetryPos{get => retryPos; set => retryPos = value;}
+    
+
 
     private bool[] isNextStages = new bool[]
     {
@@ -39,10 +48,13 @@ public class BasePlayer : MonoBehaviour
     public bool[] IsNextStages{get => isNextStages; set => isNextStages = value;}
     protected void initialize()
     {
+        RetryPos = this.transform.position;
     }
+
 
     protected void setSubscribe()
     {
+        
           this.UpdateAsObservable()
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
@@ -50,6 +62,8 @@ public class BasePlayer : MonoBehaviour
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
+                IsRetry.Value = MethodFactory.CheckOnCamera(this.gameObject);
+                ObjectFactory.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.WarpBeat.gameObject);
 
                 if(ability == Enums.PlayerAbility.WARP)
                 {
@@ -68,6 +82,14 @@ public class BasePlayer : MonoBehaviour
             .Subscribe(_ => 
             {
                 cstMouseRay();
+            });
+
+        IsRetry
+            .TakeUntilDestroy(this)
+            .Where(x => x)
+            .Subscribe(_ =>
+            {
+                StageRetry();
             });
     }
     // 挙動
@@ -112,13 +134,14 @@ public class BasePlayer : MonoBehaviour
                     //対象の重力変化
                     if(target.name == "GravityBox")
                     {
-                        target.GetComponent<GravityBoxController>().CangeGravity();
+                        MethodFactory.ChangeGravity(target);
                     }   
                 }         
                 else
                 {
                     //自身の重力変化
                     MethodFactory.ChangeGravity(this.gameObject);
+                    MethodFactory.ChangeGravity(ObjectFactory.WarpBeat.gameObject);
                 }
             });
         
@@ -147,18 +170,6 @@ public class BasePlayer : MonoBehaviour
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
             { 
-                // 以下重力反転時==============================================================================
-                if(this.GetComponent<Rigidbody2D>().gravityScale == 0f && !IsGrounded)
-                {
-                    moveDirection.y += -Physics.gravity.y * Time.deltaTime;
-                }
-                else
-                {
-                    moveDirection.y = 0;
-                }
-                // 以上重力反転時==============================================================================
-
-
                 this.transform.position += moveDirection * Time.deltaTime;
             });
     }
@@ -166,10 +177,10 @@ public class BasePlayer : MonoBehaviour
     //移動
     private void movement(float moveValue)
     {
-        if(!IsGrounded)
+        if(IsGrounded)
             moveDirection.x = moveValue * MoveSpeed;
         else
-            moveDirection.x = moveValue * ((int)MoveSpeed << 1);
+            moveDirection.x = moveValue * ((int)MoveSpeed >> 1);
 
     }
 
@@ -178,11 +189,11 @@ public class BasePlayer : MonoBehaviour
     {
         moveDirection.x = 0;
 
-        if(GetComponent<Rigidbody2D>().gravityScale != 0)
-            this.GetComponent<Rigidbody2D>().velocity = Vector2.up *  jumpForce;
-        else
-            this.GetComponent<Rigidbody2D>().velocity = Vector2.down *  jumpForce;
+        var force = this.GetComponent<Rigidbody2D>().gravityScale == 1 ? jumpForce : -jumpForce;
+
+        this.GetComponent<Rigidbody2D>().velocity = Vector2.up * force;
     }
+    
 
     // マウスカーソルの位置から「レイ」を飛ばして、何かのコライダーに当たるかどうかをチェック
     private void cstMouseRay()
@@ -210,5 +221,25 @@ public class BasePlayer : MonoBehaviour
         ObjectFactory.WarpBeat.Bead.transform.position = this.transform.position;
 
         ObjectFactory.WarpBeat.SetVec.Value = ObjectFactory.WarpBeat.Force;
+    }
+
+    // ゲームオーバー要素を取られた
+    public void StageRetry()
+    {
+        // TO:DOシーンの読み込み直しかステージ生成し直しかを用調整
+        // 読み込み直しの場合はIsNextStagesをstaticにするのがよいかも。
+        // ステージ生成挙動が完成したら変更予定
+
+        // this.transform.position = RetryPos;
+        // IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = false;
+
+        // // ステージ生成し直し
+        // ObjectFactory.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Map.UpdateMapNum.Value);
+
+        // 現在のシーンの名前を取得
+        string currentSceneName = SceneManager.GetActiveScene().name;
+
+        // 現在のシーンを再読み込み
+        SceneManager.LoadScene(currentSceneName);
     }
 }
