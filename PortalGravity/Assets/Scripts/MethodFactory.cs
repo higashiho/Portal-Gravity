@@ -47,12 +47,11 @@ public class MethodFactory : MonoBehaviour
             target.GetComponent<Rigidbody2D>().gravityScale = 1f;
     }
 
-    // 画面領域の境界座標
-    private static Vector3 screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
     // 画面内にいるか確認
     public static bool CheckOnCamera(GameObject checkingObject)
     {
-        return checkingObject.transform.position.x < -screenBounds.x || checkingObject.transform.position.x > screenBounds.x ||
-                checkingObject.transform.position.y < -screenBounds.y || checkingObject.transform.position.y > screenBounds.y;
+        return checkingObject.transform.position.x < ObjectFactory.Player.RetryPos.x - 0.5f  ||
+                checkingObject.transform.position.y < Camera.main.ScreenToWorldPoint(Vector3.down * Screen.height).y || 
+                checkingObject.transform.position.y > Camera.main.ScreenToWorldPoint(Vector3.up * Screen.height).y;
     }
 }

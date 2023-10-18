@@ -30,15 +30,14 @@ public class PlayerCol : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if(other.transform.parent != null && other.gameObject.name == "Sting")
-            ObjectFactory.Player.StageRetry();
+        ObjectFactory.Player.IsRetry.Value = other.transform.parent != null && other.transform.parent.gameObject.name == "Sting";
     }
 
     private void OnTriggerEnter2D(Collider2D other) 
     {
         if(other.transform.parent != null && other.transform.parent.gameObject.name == "Key")
         {
-            other.gameObject.SetActive(false);
+            other.transform.parent.gameObject.SetActive(false);
             ObjectFactory.Player.IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = true;
         }   
     }

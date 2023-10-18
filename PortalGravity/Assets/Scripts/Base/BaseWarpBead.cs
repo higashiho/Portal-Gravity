@@ -1,7 +1,5 @@
 using UnityEngine;
 using UniRx;
-using UnityEditor.EditorTools;
-using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 
 public class BaseWarpBead : MonoBehaviour
@@ -46,7 +44,7 @@ public class BaseWarpBead : MonoBehaviour
             .TakeUntilDestroy(this)
             .Subscribe(x =>
             {
-                rb.isKinematic = false;
+                lr.positionCount = 0;
                 rb.AddForce(x, ForceMode2D.Impulse);
             
             });
@@ -78,7 +76,6 @@ public class BaseWarpBead : MonoBehaviour
     // 更新時初期化
     public async void Resets(Vector3 offset)
     {
-        lr.positionCount = 0;
 
         if(offset != Vector3.zero)
         {
@@ -93,7 +90,6 @@ public class BaseWarpBead : MonoBehaviour
     private void setStartPos()
     {
         rb.velocity = Vector3.zero;
-        rb.isKinematic = true;
         startPos = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
     
