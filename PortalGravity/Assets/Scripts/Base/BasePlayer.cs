@@ -3,8 +3,6 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using UnityEditor.EditorTools;
 
 public class BasePlayer : MonoBehaviour
 {
@@ -15,6 +13,8 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<bool> isChangeAbility = new ReactiveProperty<bool>();
     private ReactiveProperty<bool> isRetry = new ReactiveProperty<bool>();
     public ReactiveProperty<bool> IsRetry => isRetry;
+
+    private ReactiveProperty<bool> isUpdateRetrayPos = new ReactiveProperty<bool>();
 
     [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
@@ -64,12 +64,14 @@ public class BasePlayer : MonoBehaviour
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
                 IsRetry.Value = MethodFactory.CheckOnCamera(this.gameObject);
                 ObjectFactory.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.WarpBeat.gameObject);
+                isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] && 
+                                            this.transform.position.x >= Camera.main.transform.position.x + 8.5f;
 
-                if(ability == Enums.PlayerAbility.WARP)
+                if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.WarpBeat.Bead.activeSelf)
                 {
                     ObjectFactory.WarpBeat.IsShotStart.Value = Input.GetMouseButtonDown(0);
                     ObjectFactory.WarpBeat.IsChangeForce.SetValueAndForceNotify(Input.GetMouseButton(0));
-                    isWarpBeadShot.Value = !ObjectFactory.WarpBeat.Bead.activeSelf && Input.GetMouseButtonUp(0);
+                    isWarpBeadShot.Value =  Input.GetMouseButtonUp(0);
                 }
                 else if(Ability == Enums.PlayerAbility.GRAVITY)
                 {
@@ -90,6 +92,26 @@ public class BasePlayer : MonoBehaviour
             .Subscribe(_ =>
             {
                 StageRetry();
+            });
+
+        isUpdateRetrayPos
+            .TakeUntilDestroy(this)
+            .Where(x => x)
+            .Subscribe(_ =>
+            {
+                // Retrypos更新
+                retryPos = this.transform.position;
+                retryPos.x++;
+                this.GetComponent<Rigidbody2D>().gravityScale = 1;
+                ObjectFactory.WarpBeat.Rb.gravityScale = 1;
+
+                // マップ生成挙動＋カメラ移動挙動
+                Camera.main.transform.position = new Vector3(
+                    this.transform.position.x + Constant.CAMERA_DRAW_LEFT_POS, 
+                    Camera.main.transform.position.y, 
+                    Camera.main.transform.position.z
+                );
+                this.transform.position = retryPos;
             });
     }
     // 挙動
@@ -134,6 +156,8 @@ public class BasePlayer : MonoBehaviour
                     //対象の重力変化
                     if(target.name == "GravityBox")
                     {
+                        target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;           
+                        target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
                         MethodFactory.ChangeGravity(target);
                     }   
                 }         
@@ -171,6 +195,9 @@ public class BasePlayer : MonoBehaviour
             .Subscribe(_ => 
             { 
                 this.transform.position += moveDirection * Time.deltaTime;
+            
+                if(this.transform.position.x <= RetryPos.x)
+                    this.transform.position = new Vector3(RetryPos.x, this.transform.position.y, this.transform.position.z);
             });
     }
     
@@ -220,6 +247,7 @@ public class BasePlayer : MonoBehaviour
         ObjectFactory.WarpBeat.Bead.SetActive(true);
         ObjectFactory.WarpBeat.Bead.transform.position = this.transform.position;
 
+        ObjectFactory.WarpBeat.transform.parent = null;
         ObjectFactory.WarpBeat.SetVec.Value = ObjectFactory.WarpBeat.Force;
     }
 
@@ -230,16 +258,12 @@ public class BasePlayer : MonoBehaviour
         // 読み込み直しの場合はIsNextStagesをstaticにするのがよいかも。
         // ステージ生成挙動が完成したら変更予定
 
-        // this.transform.position = RetryPos;
-        // IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = false;
+        this.transform.position = RetryPos;
+        IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = false;
+        ObjectFactory.WarpBeat.Resets(Vector3.zero);
+        this.GetComponent<Rigidbody2D>().gravityScale = 1;
 
         // // ステージ生成し直し
         // ObjectFactory.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Map.UpdateMapNum.Value);
-
-        // 現在のシーンの名前を取得
-        string currentSceneName = SceneManager.GetActiveScene().name;
-
-        // 現在のシーンを再読み込み
-        SceneManager.LoadScene(currentSceneName);
     }
 }

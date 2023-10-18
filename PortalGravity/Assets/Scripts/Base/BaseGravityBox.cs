@@ -1,6 +1,4 @@
 using UnityEngine;
-using UniRx;
-using UniRx.Triggers;
 
 public class BaseGravityBox : MonoBehaviour
 {
