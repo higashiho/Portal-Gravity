@@ -589,11 +589,23 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895792432}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c19092c78db657b43a545ff5ffef6adc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stageItems:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  fileName: []
 --- !u!4 &895792434
 Transform:
   m_ObjectHideFlags: 0
@@ -602,7 +614,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895792432}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -8.569697, y: 0.4055449, z: 0.049453493}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1006,6 +1018,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 410534638}
     m_Modifications:
+    - target: {fileID: 1012879896167632101, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3423362351772873380, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7631820940773889673, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8536186403458474839, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8635517224143896448, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8965197394569766515, guid: 51d25e272bef933489d1ee6c24720926, type: 3}
       propertyPath: m_Name
       value: Key
@@ -1420,13 +1452,49 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 626025461, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_GravityScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 0.89914775
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.31730795
+      objectReference: {fileID: 0}
+    - target: {fileID: 4504483000290754381, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_GravityScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530000, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530001, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: ability
-      value: 1
+      propertyPath: moveSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5412674856169530001, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: isGrounded
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530003, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_RootOrder

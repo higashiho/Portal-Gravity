@@ -40,12 +40,19 @@ public class MethodFactory : MonoBehaviour
     // 重力反転
     public static void ChangeGravity(GameObject target)
     {
-        //少しだけ上に上げる
-        target.GetComponent<Rigidbody2D>().velocity = Vector3.up * 1;
 
-        if(target.GetComponent<Rigidbody2D>().gravityScale != 0f)
-            target.GetComponent<Rigidbody2D>().gravityScale = 0f;
+        if(target.GetComponent<Rigidbody2D>().gravityScale != -1f)
+            target.GetComponent<Rigidbody2D>().gravityScale = -1f;
         else
             target.GetComponent<Rigidbody2D>().gravityScale = 1f;
+    }
+
+    // 画面領域の境界座標
+    private static Vector3 screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+    // 画面内にいるか確認
+    public static bool CheckOnCamera(GameObject checkingObject)
+    {
+        return checkingObject.transform.position.x < -screenBounds.x || checkingObject.transform.position.x > screenBounds.x ||
+                checkingObject.transform.position.y < -screenBounds.y || checkingObject.transform.position.y > screenBounds.y;
     }
 }

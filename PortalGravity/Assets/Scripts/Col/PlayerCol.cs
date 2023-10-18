@@ -8,7 +8,7 @@ public class PlayerCol : MonoBehaviour
         if(other.gameObject.tag == "Ground" && !ObjectFactory.Player.IsGrounded)
         {
             //playerの重力加速度がない状態で上で当たっていたら
-            if(ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale == 0)
+            if(ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale == -1)
             {
                 if(MethodFactory.GetColDir(other) == Enums.ColDir.UP)
                 {
@@ -26,10 +26,17 @@ public class PlayerCol : MonoBehaviour
                 }
             }
         }
+
     }
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if(other.transform.parent != null && other.gameObject.name == "Sting")
+            ObjectFactory.Player.StageRetry();
+    }
+
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        if(other.transform.parent.gameObject.name == "Key")
+        if(other.transform.parent != null && other.transform.parent.gameObject.name == "Key")
         {
             other.gameObject.SetActive(false);
             ObjectFactory.Player.IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = true;
