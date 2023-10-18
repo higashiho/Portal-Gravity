@@ -7,32 +7,15 @@ namespace map
 {
     public class MapMake
     {
+        // 読み込まれた文字
+        private List<string[]> waveDate = new List<string[]>();
 
-    [SerializeField, Tooltip("ステージ生成CSVファイル")]
-    private List<string> fileName = new List<string>();
+        // 生成するCSVファイル
+        private TextAsset csvFile;
 
-    [SerializeField, Tooltip("CSVファイルのリストの何番目か")]
-    private int waveNum = 0;
-    
-    // 生成するCSVファイル
-    private TextAsset csvFile;
-
-    // 読み込まれた文字
-    private List<string[]> waveDate = new List<string[]>();
-
-    [SerializeField, Tooltip("横座標数")]
-    private int maxCol = 18;
-
-    //[SerializeField]
-    //private GameObject player = null;
-
-    [SerializeField, Tooltip("ステージに登場するアイテム・床・仕掛けの数")]
-    private GameObject[] stageItems = new GameObject[10];
-
-
-    public void CSVload(int fileNum)
+    public void CSVload(string fileName,GameObject[] instancObjects, GameObject parent)
     {
-        csvFile = Resources.Load(fileName[fileNum]) as TextAsset;
+        csvFile = Resources.Load(fileName) as TextAsset;
         
         StringReader reader = new StringReader(csvFile.text);    
         
@@ -46,14 +29,14 @@ namespace map
             waveDate.Add(line.Split(','));
         }
 
-        spawn();
+        spawn(instancObjects, parent);
     }
 
-        void spawn()
+        void spawn(GameObject[] instancObject, GameObject parent)
         {
             for (int row = 0; row < waveDate.Count; row++)
             {
-                for (int col = 0; col < maxCol; col++)
+                for (int col = 0; col < waveDate[row].Length; col++)
                 {
                     // Noneなら何も置かない
                     if(waveDate[row][col] == "None") continue;
@@ -65,7 +48,7 @@ namespace map
                     Vector2 spanPos = new Vector2(col - 8.5f, 5f - row);
 
                     // 設置
-                    MonoBehaviour.Instantiate(stageItems[num], spanPos, Quaternion.identity);
+                    MonoBehaviour.Instantiate(instancObject[num], spanPos, Quaternion.identity, parent.transform);
 
                 }
             }       
