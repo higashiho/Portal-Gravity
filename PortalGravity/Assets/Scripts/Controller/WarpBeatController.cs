@@ -5,9 +5,6 @@ public class WarpBeatController : BaseWarpBead
     {
         ObjectFactory.WarpBeat = this;
         initialize();
-    }
-    void Start()
-    {
         setSubscribe();
     }
 }

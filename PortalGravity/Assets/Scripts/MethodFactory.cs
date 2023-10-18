@@ -40,12 +40,18 @@ public class MethodFactory : MonoBehaviour
     // 重力反転
     public static void ChangeGravity(GameObject target)
     {
-        //少しだけ上に上げる
-        target.GetComponent<Rigidbody2D>().velocity = Vector3.up * 1;
 
-        if(target.GetComponent<Rigidbody2D>().gravityScale != 0f)
-            target.GetComponent<Rigidbody2D>().gravityScale = 0f;
+        if(target.GetComponent<Rigidbody2D>().gravityScale != -1f)
+            target.GetComponent<Rigidbody2D>().gravityScale = -1f;
         else
             target.GetComponent<Rigidbody2D>().gravityScale = 1f;
+    }
+
+    // 画面内にいるか確認
+    public static bool CheckOnCamera(GameObject checkingObject)
+    {
+        return checkingObject.transform.position.x < ObjectFactory.Player.RetryPos.x - 0.5f  ||
+                checkingObject.transform.position.y < Camera.main.ScreenToWorldPoint(Vector3.down * Screen.height).y || 
+                checkingObject.transform.position.y > Camera.main.ScreenToWorldPoint(Vector3.up * Screen.height).y;
     }
 }

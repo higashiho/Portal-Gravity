@@ -5,10 +5,11 @@ public class PlayerCol : MonoBehaviour
 
     private void OnCollisionStay2D(Collision2D other) 
     {
-        if(other.gameObject.tag == "Ground" && !ObjectFactory.Player.IsGrounded)
+        if(other.gameObject.tag == "Ground" && !ObjectFactory.Player.IsGrounded ||
+            other.gameObject.tag == "GravityBox" && !ObjectFactory.Player.IsGrounded)
         {
             //playerの重力加速度がない状態で上で当たっていたら
-            if(ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale == 0)
+            if(ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale == -1)
             {
                 if(MethodFactory.GetColDir(other) == Enums.ColDir.UP)
                 {
@@ -26,14 +27,30 @@ public class PlayerCol : MonoBehaviour
                 }
             }
         }
+
     }
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        
+        if(other.transform.parent != null)
+            ObjectFactory.Player.IsRetry.Value = other.transform.parent.gameObject.tag == "Sting" || 
+                                            other.gameObject.tag == "GroundSting" && this.transform.position.y < other.transform.position.y ||
+                                            other.gameObject.tag == "Spear"  && this.transform.position.y < other.transform.position.y
+                                            ;
+    }
+
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        if(other.transform.parent.gameObject.name == "Key")
+        if(other.transform.parent != null && other.transform.parent.gameObject.tag == "Key")
         {
-            other.gameObject.SetActive(false);
+            other.transform.parent.gameObject.SetActive(false);
             ObjectFactory.Player.IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = true;
         }   
+
+        if(other.transform.parent != null)
+            ObjectFactory.Player.IsRetry.Value = other.transform.parent.gameObject.tag == "Laser" || 
+                                                other.transform.parent.gameObject.tag == "SmalSting";
+        
     }
     private void OnCollisionExit2D(Collision2D other) 
     {

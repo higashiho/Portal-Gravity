@@ -1,6 +1,4 @@
 using UnityEngine;
-using UniRx;
-using UniRx.Triggers;
 
 public class BaseGravityBox : MonoBehaviour
 {
@@ -16,29 +14,5 @@ public class BaseGravityBox : MonoBehaviour
 
     protected void setSubscribe()
     {
-        this.UpdateAsObservable()
-            .Where(_ => IsChangeGravityFlag)
-            .TakeUntilDestroy(this)
-            .Subscribe(_ => 
-            {
-                
-                if(!IsGrounded)
-                {
-                    moveDirection.y += -Physics.gravity.y * Time.deltaTime;
-                }
-                else
-                {
-                    moveDirection.y = 0;
-                }
-
-                this.transform.position += moveDirection * Time.deltaTime;
-            });
-    }
-
-    // 重力関係変化
-    public void CangeGravity()
-    {
-        IsChangeGravityFlag = !IsChangeGravityFlag;  
-        IsGrounded = !IsGrounded;
     }
 }

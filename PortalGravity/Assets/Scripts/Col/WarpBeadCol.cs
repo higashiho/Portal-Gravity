@@ -11,10 +11,8 @@ public class WarpBeadCol : MonoBehaviour
 
         if(other.gameObject.tag != "Player")
         {
-            ObjectFactory.Player.transform.position = this.transform.position;
-            ObjectFactory.Player.transform.position +=  ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale != 0 ? offset : -offset;
+            ObjectFactory.WarpBeat.Resets(offset);
 
-            this.gameObject.SetActive(false);
         }
     }
 }
