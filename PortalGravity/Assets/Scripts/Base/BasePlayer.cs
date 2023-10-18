@@ -3,6 +3,7 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 public class BasePlayer : MonoBehaviour
 {
@@ -163,9 +164,11 @@ public class BasePlayer : MonoBehaviour
                 }         
                 else
                 {
-                    //自身の重力変化
-                    MethodFactory.ChangeGravity(this.gameObject);
-                    MethodFactory.ChangeGravity(ObjectFactory.WarpBeat.gameObject);
+                    this.transform.DOLocalRotate(Vector3.right * 180, 1).SetEase(Ease.Linear).OnStart(() => {
+                        //自身の重力変化
+                        MethodFactory.ChangeGravity(this.gameObject);
+                        MethodFactory.ChangeGravity(ObjectFactory.WarpBeat.gameObject);
+                    }).SetLink(this.gameObject);
                 }
             });
         
@@ -230,7 +233,7 @@ public class BasePlayer : MonoBehaviour
         var hit = Physics2D.Raycast(ray.origin, ray.direction);
         if (hit.collider)
         {
-            if(hit.collider.gameObject.name == "GravityBox")
+            if(hit.collider.gameObject.tag == "GravityBox")
                 targetGravityBox = hit.collider.gameObject;
             else
                 targetGravityBox = null;
