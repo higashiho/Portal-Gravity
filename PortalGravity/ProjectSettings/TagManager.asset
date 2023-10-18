@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
+  - Key
+  - Sting
+  - SmalSting
+  - Laser
+  - Spear
+  - BreakGround
   layers:
   - Default
   - TransparentFX
