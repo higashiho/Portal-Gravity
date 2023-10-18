@@ -1452,49 +1452,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 626025461, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_GravityScale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.g
-      value: 0.89914775
-      objectReference: {fileID: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Parameters.colorGradient.key0.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1225163064, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.31730795
-      objectReference: {fileID: 0}
-    - target: {fileID: 4504483000290754381, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: m_GravityScale
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530000, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 5412674856169530001, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: moveSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 5412674856169530001, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
-      propertyPath: isGrounded
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530003, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_RootOrder
@@ -1506,7 +1466,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530003, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.38
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 5412674856169530003, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_LocalPosition.z
