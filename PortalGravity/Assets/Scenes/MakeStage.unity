@@ -6776,6 +6776,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BreakGround
       objectReference: {fileID: 0}
+    - target: {fileID: 1942850309492257264, guid: f2d450206d6cad44dbcc2668d1e0e468, type: 3}
+      propertyPath: m_TagString
+      value: BreakGround
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f2d450206d6cad44dbcc2668d1e0e468, type: 3}
 --- !u!4 &1475983831626739234 stripped
