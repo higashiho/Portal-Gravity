@@ -3017,7 +3017,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 740453650}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7982,7 +7982,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2063990775}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -9090,17 +9090,9 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1539249272}
     m_Modifications:
-    - target: {fileID: 2577319908235388292, guid: eae7d967015d8d0489a1228eca3f8d1d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.25
-      objectReference: {fileID: 0}
     - target: {fileID: 6237142065695005855, guid: eae7d967015d8d0489a1228eca3f8d1d, type: 3}
       propertyPath: m_Name
       value: Laser
-      objectReference: {fileID: 0}
-    - target: {fileID: 6456535808760859483, guid: eae7d967015d8d0489a1228eca3f8d1d, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: -4.5
       objectReference: {fileID: 0}
     - target: {fileID: 8888563952482965334, guid: eae7d967015d8d0489a1228eca3f8d1d, type: 3}
       propertyPath: m_RootOrder
