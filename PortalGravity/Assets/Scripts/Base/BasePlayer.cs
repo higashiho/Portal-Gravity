@@ -113,6 +113,8 @@ public class BasePlayer : MonoBehaviour
                     Camera.main.transform.position.z
                 );
                 this.transform.position = retryPos;
+
+                
             });
     }
     // 挙動
