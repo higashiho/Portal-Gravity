@@ -114,7 +114,11 @@ public class BasePlayer : MonoBehaviour
                 );
                 this.transform.position = retryPos;
 
-                
+                // 前のステージのオブジェクトを非表示
+                ObjectFactory.Map.DeleteStageObject();
+
+                // 次のステージを生成
+                ObjectFactory.Map.NextMaps();
             });
     }
     // 挙動

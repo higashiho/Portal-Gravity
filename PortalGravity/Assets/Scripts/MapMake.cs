@@ -13,27 +13,36 @@ namespace map
         // 生成するCSVファイル
         private TextAsset csvFile;
 
-    public void CSVload(string fileName,GameObject[] instancObjects, GameObject parent)
-    {
-        csvFile = Resources.Load(fileName) as TextAsset;
-        
-        StringReader reader = new StringReader(csvFile.text);    
-        
-        // scvの空白まで読み込む
-        while (reader.Peek() != -1)
+        public void CSVload(string fileName,GameObject[] instancObjects, GameObject parent)
         {
-            // 文字を読み込む
-            string line = reader.ReadLine();
+            csvFile = Resources.Load(fileName) as TextAsset;
+            
+            StringReader reader = new StringReader(csvFile.text);    
+            
+            // scvの空白まで読み込む
+            while (reader.Peek() != -1)
+            {
+                // 文字を読み込む
+                string line = reader.ReadLine();
 
-            // 「 , 」が読み込まれたら、そこまでの文字を１文字とする 
-            waveDate.Add(line.Split(','));
+                // 「 , 」が読み込まれたら、そこまでの文字を１文字とする 
+                waveDate.Add(line.Split(','));
+            }
+
+            spawn(instancObjects, parent);
+
+            waveDate.Clear();
         }
 
-        spawn(instancObjects, parent);
-    }
-
-        void spawn(GameObject[] instancObject, GameObject parent)
+        /// <summary>
+        /// オブジェクトを指定の座標に生成する
+        /// </summary>
+        /// <param name="instancObject">生成するオブジェクト</param>
+        /// <param name="parent">生成されたオブジェクトの親</param>
+        private void spawn(GameObject[] instancObject, GameObject parent)
         {
+            
+
             for (int row = 0; row < waveDate.Count; row++)
             {
                 for (int col = 0; col < waveDate[row].Length; col++)
@@ -45,13 +54,12 @@ namespace map
                     int num = int.Parse(waveDate[row][col]);
 
                     // 設置座標
-                    Vector2 spanPos = new Vector2(col - 8.5f, 5f - row);
+                    Vector2 spanPos = new Vector2(ObjectFactory.Player.RetryPos.x + col, 5f - row);
 
                     // 設置
                     MonoBehaviour.Instantiate(instancObject[num], spanPos, Quaternion.identity, parent.transform);
-
                 }
-            }       
+            }
         }
     }
 }
