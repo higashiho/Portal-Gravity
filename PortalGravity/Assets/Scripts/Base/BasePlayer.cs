@@ -38,6 +38,8 @@ public class BasePlayer : MonoBehaviour
     
     public Vector3 RetryPos{get; private set;} = new Vector3(0,0,0);
 
+    // 重力変化挙動中か
+    private bool nowChangeGravity = false;
 
     // ステージ１のカメラの座標
     protected Vector3 cameraStage1Pos;
@@ -76,6 +78,7 @@ public class BasePlayer : MonoBehaviour
     public bool[] IsNextStages{get => isNextStages; set => isNextStages = value;}
     protected void initialize()
     {
+        ObjectFactory.Instance = new ObjectFactory();
         RetryPos = this.transform.position;
 
         
@@ -103,6 +106,7 @@ public class BasePlayer : MonoBehaviour
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
             {
+                if(ObjectFactory.Instance == null || ObjectFactory.Instance.Player == null) return;
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
@@ -111,15 +115,27 @@ public class BasePlayer : MonoBehaviour
                 isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] &&
                                             this.transform.position.x >= Camera.main.transform.position.x + 8.5f;
 
-                if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.WarpBeat.Bead.activeSelf)
+                if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.Instance.WarpBeat.Bead.activeSelf)
                 {
-                    ObjectFactory.WarpBeat.IsShotStart.Value = Input.GetMouseButtonDown(0);
-                    ObjectFactory.WarpBeat.IsChangeForce.SetValueAndForceNotify(Input.GetMouseButton(0));
+                    ObjectFactory.Instance.WarpBeat.IsShotStart.Value = Input.GetMouseButtonDown(0);
+                    ObjectFactory.Instance.WarpBeat.IsChangeForce.SetValueAndForceNotify(Input.GetMouseButton(0));
                     isWarpBeadShot.Value =  Input.GetMouseButtonUp(0);
                 }
-                else if(Ability == Enums.PlayerAbility.GRAVITY)
+                else if(Ability == Enums.PlayerAbility.GRAVITY && IsGrounded)
                 {
-                    isChangeGravity.Value = IsGrounded && Input.GetMouseButtonDown(0);
+                    isChangeGravity.Value = !nowChangeGravity && Input.GetMouseButtonDown(0);
+                }
+
+                
+                foreach(var spear in ObjectFactory.Instance.Spears)
+                {
+                    if(spear.GetComponent<Rigidbody2D>().gravityScale == 0)
+                    {
+                        spear.IsFall.Value = this.transform.position.x > spear.transform.position.x - spear.transform.localScale.x &&
+                                                this.transform.position.x < spear.transform.position.x + spear.transform.localScale.x ;
+
+                    }
+
                 }
             });
 
@@ -153,7 +169,8 @@ public class BasePlayer : MonoBehaviour
 
                 
                 this.GetComponent<Rigidbody2D>().gravityScale = 1;
-                ObjectFactory.WarpBeat.Rb.gravityScale = 1;
+                ObjectFactory.Instance.WarpBeat.Rb.gravityScale = 1;
+                this.transform.eulerAngles = Vector3.zero;
 
                 // マップ生成挙動＋カメラ移動挙動
                 // Camera.main.transform.position = new Vector3(
@@ -204,10 +221,12 @@ public class BasePlayer : MonoBehaviour
         
         isChangeGravity
             .TakeUntilDestroy(this)
+            .ThrottleFirst(TimeSpan.FromSeconds(1))
             .Where(x => x)
             .Subscribe(async x =>
             {
                 var target = targetGravityBox;
+                nowChangeGravity = true;
                 // １秒待つ
                 await UniTask.Delay(1000);
 
@@ -215,7 +234,7 @@ public class BasePlayer : MonoBehaviour
                 if(target)
                 {
                     //対象の重力変化
-                    if(target.name == "GravityBox")
+                    if(target.tag == "GravityBox" || target.tag == "GroundSting" || target.tag == "Spear")
                     {
                         target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;           
                         target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
@@ -224,12 +243,18 @@ public class BasePlayer : MonoBehaviour
                 }         
                 else
                 {
-                    this.transform.DOLocalRotate(Vector3.right * 180, 1).SetEase(Ease.Linear).OnStart(() => {
+                    
+                    this.transform.DOLocalRotate(
+                            this.GetComponent<Rigidbody2D>().gravityScale == 1 ? Vector3.right * 180 : Vector3.zero,
+                            1
+                        ).SetEase(Ease.Linear).OnStart(() => {
                         //自身の重力変化
                         MethodFactory.ChangeGravity(this.gameObject);
-                        MethodFactory.ChangeGravity(ObjectFactory.WarpBeat.gameObject);
+                        MethodFactory.ChangeGravity(ObjectFactory.Instance.WarpBeat.gameObject);
                     }).SetLink(this.gameObject);
                 }
+
+                nowChangeGravity = false;
             });
         
         isWarpBeadShot
@@ -295,6 +320,9 @@ public class BasePlayer : MonoBehaviour
         {
             if(hit.collider.gameObject.tag == "GravityBox")
                 targetGravityBox = hit.collider.gameObject;
+            else if(hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "GroundSting" || 
+            hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "Spear")
+                targetGravityBox = hit.collider.transform.parent.gameObject;
             else
                 targetGravityBox = null;
         }
@@ -307,11 +335,11 @@ public class BasePlayer : MonoBehaviour
     // ワープ弾発射挙動
     private void shotWarpBead()
     {
-        ObjectFactory.WarpBeat.Bead.SetActive(true);
-        ObjectFactory.WarpBeat.Bead.transform.position = this.transform.position;
+        ObjectFactory.Instance.WarpBeat.Bead.SetActive(true);
+        ObjectFactory.Instance.WarpBeat.Bead.transform.position = this.transform.position;
 
-        ObjectFactory.WarpBeat.transform.parent = null;
-        ObjectFactory.WarpBeat.SetVec.Value = ObjectFactory.WarpBeat.Force;
+        ObjectFactory.Instance.WarpBeat.transform.parent = null;
+        ObjectFactory.Instance.WarpBeat.SetVec.Value = ObjectFactory.Instance.WarpBeat.Force;
     }
 
     // ゲームオーバー要素を取られた
@@ -320,14 +348,15 @@ public class BasePlayer : MonoBehaviour
         // TO:DOシーンの読み込み直しかステージ生成し直しかを用調整
         // 読み込み直しの場合はIsNextStagesをstaticにするのがよいかも。
         // ステージ生成挙動が完成したら変更予定
-
+        this.transform.eulerAngles = Vector3.zero;
         this.transform.position = RetryPos;
-        IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] = false;
-        ObjectFactory.WarpBeat.Resets(Vector3.zero);
+        IsNextStages[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value] = false;
+        ObjectFactory.Instance.WarpBeat.Resets(Vector3.zero);
         this.GetComponent<Rigidbody2D>().gravityScale = 1;
+        ObjectFactory.Instance.WarpBeat.Rb.gravityScale = 1;
 
         // // ステージ生成し直し
-        // ObjectFactory.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Map.UpdateMapNum.Value);
+        // ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
     }
 
 

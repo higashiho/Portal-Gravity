@@ -1,9 +1,12 @@
 
+using Cysharp.Threading.Tasks;
+
 public class WarpBeatController : BaseWarpBead
 {
-    private void Awake() 
+    private async void Awake() 
     {
-        ObjectFactory.WarpBeat = this;
+        await UniTask.WaitUntil(() => ObjectFactory.Instance != null);
+        ObjectFactory.Instance.WarpBeat = this;
         initialize();
         setSubscribe();
     }
