@@ -6,10 +6,12 @@ TagManager:
   tags:
   - Ground
   - Key
+  - GravityBox
   - Sting
-  - SmalSting
-  - Laser
   - Spear
+  - SmalSting
+  - GroundSting
+  - Laser
   - BreakGround
   layers:
   - Default

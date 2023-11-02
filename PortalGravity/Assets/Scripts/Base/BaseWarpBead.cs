@@ -1,5 +1,7 @@
 using UnityEngine;
 using UniRx;
+using UnityEditor.EditorTools;
+using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 
 public class BaseWarpBead : MonoBehaviour
@@ -76,14 +78,15 @@ public class BaseWarpBead : MonoBehaviour
     // 更新時初期化
     public async void Resets(Vector3 offset)
     {
+        lr.positionCount = 0;
 
         if(offset != Vector3.zero)
         {
-            ObjectFactory.Player.transform.position = this.transform.position;
-            ObjectFactory.Player.transform.position +=  ObjectFactory.Player.GetComponent<Rigidbody2D>().gravityScale != 0 ? offset : -offset;
+            ObjectFactory.Instance.Player.transform.position = this.transform.position;
+            ObjectFactory.Instance.Player.transform.position +=  ObjectFactory.Instance.Player.GetComponent<Rigidbody2D>().gravityScale != 0 ? offset : -offset;
         }
-        await UniTask.WaitUntil(() => ObjectFactory.Player != null);
-        this.transform.parent = ObjectFactory.Player.transform;
+        await UniTask.WaitUntil(() => ObjectFactory.Instance.Player != null);
+        this.transform.parent = ObjectFactory.Instance.Player.transform;
         this.gameObject.SetActive(false);
 
     }
