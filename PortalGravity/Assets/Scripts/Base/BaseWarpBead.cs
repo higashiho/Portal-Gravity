@@ -76,7 +76,9 @@ public class BaseWarpBead : MonoBehaviour
     // 更新時初期化
     public async void Resets(Vector3 offset)
     {
-
+        if(lr.positionCount != 0)
+            lr.positionCount = 0;
+        
         if(offset != Vector3.zero)
         {
             ObjectFactory.Player.transform.position = this.transform.position;

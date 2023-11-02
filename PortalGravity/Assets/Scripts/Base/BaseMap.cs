@@ -28,16 +28,19 @@ public class BaseMap : MonoBehaviour
             .Where(x => x != Enums.MapNum.DEFAULT)
             .Subscribe(x => 
             {
-                make.CSVload(fileName[(int)x], stageItems, this.gameObject);
+                if((int)ObjectFactory.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0)
+                    make.CSVload(fileName[(int)x], stageItems, this.gameObject);
 
             });
     }
+    
 
     // 次のステージのステートにすることで、次のステージを生成する
-    public void NextMaps()
+    public void MapStateincrement()
     {
         UpdateMapNum.Value++;
     }
+
 
     // 前のステージのオブジェクトを非アクティブにする
     public void DeleteStageObject()

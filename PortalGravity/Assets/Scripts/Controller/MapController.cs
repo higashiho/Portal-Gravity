@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using UnityEngine;
 
 public class MapController : BaseMap
 {
@@ -7,5 +9,10 @@ public class MapController : BaseMap
     void Start()
     {
         setSubscribe();
+    }
+
+    void Update()
+    {
+        
     }
 }

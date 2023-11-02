@@ -1,3 +1,4 @@
+using UnityEngine;
 
 public class PlayerController : BasePlayer
 {
@@ -9,5 +10,12 @@ public class PlayerController : BasePlayer
     {
         setSubscribe();
         setMoveSubscribe();
+    }
+
+
+    void Update()
+    {        
+        // カメラ移動
+        moveCamera();
     }
 }
