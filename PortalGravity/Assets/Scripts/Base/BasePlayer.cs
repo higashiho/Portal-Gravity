@@ -133,10 +133,10 @@ public class BasePlayer : MonoBehaviour
                 this.transform.position = retryPos;
 
                 // 前のステージのオブジェクトを非表示
-                ObjectFactory.Map.DeleteStageObject();
+                ObjectFactory.Instance.Map.DeleteStageObject();
 
                 // 次のステージを生成
-                ObjectFactory.Map.NextMaps();
+                ObjectFactory.Instance.Map.NextMaps();
             });
     }
     // 挙動

@@ -13,6 +13,7 @@ TagManager:
   - GroundSting
   - Laser
   - BreakGround
+  - Button
   layers:
   - Default
   - TransparentFX
