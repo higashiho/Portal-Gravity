@@ -3,6 +3,7 @@ public class Constant
 {
     public const float CAMERA_DRAW_LEFT_POS = 9.5f;
     public const float SHOT_MAXPOWER = 5.0f;
+    public const float PLAYER_RAY_DISTANCE = 5.0f;
 
     // 失敗時の帰還Y座標
     public static readonly float[] RETRY_POS_Y = {-1f, 1f, 2f};

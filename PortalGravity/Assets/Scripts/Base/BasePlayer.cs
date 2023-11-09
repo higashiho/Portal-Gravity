@@ -60,7 +60,7 @@ public class BasePlayer : MonoBehaviour
         false, false, false, false
     };
     public bool[] IsNextStages{get => isNextStages; set => isNextStages = value;}
-    protected void initialize()
+    protected async void initialize()
     {
         ObjectFactory.Instance = new ObjectFactory();
         RetryPos = this.transform.position;
@@ -76,6 +76,20 @@ public class BasePlayer : MonoBehaviour
 
         playerRigidBody = this.GetComponent<Rigidbody2D>();
         
+        this.GetComponent<SpriteRenderer>().color = Ability switch
+        {
+            Enums.PlayerAbility.WARP => Color.red,
+            Enums.PlayerAbility.GRAVITY => Color.blue,
+            _ => default
+        };
+                    
+        abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+        DOTween.Kill(abilityText);
+        abilityText.text = ability.ToString();
+        
+        await UniTask.Delay(300);
+        abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+
     }
 
 
@@ -87,6 +101,8 @@ public class BasePlayer : MonoBehaviour
             .Subscribe(_ => 
             {
                 if(ObjectFactory.Instance == null || ObjectFactory.Instance.Player == null) return;
+               
+                Debug.DrawRay(gameObject.transform.position, Vector3.right * Constant.PLAYER_RAY_DISTANCE, Color.blue, 0.1f);
                 isJumping.Value = Input.GetKeyDown(KeyCode.Space);
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
@@ -228,13 +244,29 @@ public class BasePlayer : MonoBehaviour
                 // 重力変化
                 if(target)
                 {
-                    //対象の重力変化
-                    if(target.tag == "GravityBox" || target.tag == "GroundSting" || target.tag == "Spear")
+                    switch(target.tag)
                     {
-                        target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;           
-                        target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
-                        MethodFactory.ChangeGravity(target);
-                    }   
+                        case "ReverseSting":
+                            int playerLayer = 1 << 8;
+                            RaycastHit2D hit = Physics2D.Raycast(gameObject.transform.position, Vector3.right, Constant.PLAYER_RAY_DISTANCE, ~playerLayer);
+                    
+                            if(hit.collider.tag == target.tag)
+                            {
+                                //対象の重力変化
+                                target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;           
+                                target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+                                MethodFactory.ChangeGravity(target);
+                            
+                            }
+                        break;
+                        default:
+                            //対象の重力変化
+                            target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.None;           
+                            target.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
+                            MethodFactory.ChangeGravity(target);
+                        break;
+                    }
+
                 }         
                 else
                 {
@@ -257,22 +289,42 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ => 
             {
-
                 shotWarpBead();
             });
 
         isChangeAbility
             .TakeUntilDestroy(this)
             .Where(x => x)
-            .Subscribe(_ => 
+            .Subscribe(async _ => 
             {
                 
                 if(ability == Enums.PlayerAbility.GRAVITY)
+                {
                     ability = Enums.PlayerAbility.WARP;
+                    this.GetComponent<SpriteRenderer>().color = Color.red;
+                    
+                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    DOTween.Kill(abilityText);
+                    abilityText.text = ability.ToString();
+                    
+                    await UniTask.Delay(300);
+                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                
+                }
                 else
+                {
                     ability = Enums.PlayerAbility.GRAVITY;
+                    this.GetComponent<SpriteRenderer>().color = Color.blue;
+                    
+                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    DOTween.Kill(abilityText);
+                    abilityText.text = ability.ToString();
+                    
+                    await UniTask.Delay(300);
+                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                }
             });
-
+    
         this.UpdateAsObservable()
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
@@ -313,10 +365,10 @@ public class BasePlayer : MonoBehaviour
         var hit = Physics2D.Raycast(ray.origin, ray.direction);
         if (hit.collider)
         {
-            if(hit.collider.gameObject.tag == "GravityBox")
+            if(hit.collider.gameObject.tag == "GravityBox" || hit.collider.gameObject.tag == "ReverseSting")
                 targetGravityBox = hit.collider.gameObject;
             else if(hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "GroundSting" || 
-            hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "Spear")
+                        hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "Spear")
                 targetGravityBox = hit.collider.transform.parent.gameObject;
             else
                 targetGravityBox = null;
@@ -330,6 +382,7 @@ public class BasePlayer : MonoBehaviour
     // ワープ弾発射挙動
     private void shotWarpBead()
     {
+        ObjectFactory.Instance.WarpBeat.Bead.transform.eulerAngles = Vector3.zero;
         ObjectFactory.Instance.WarpBeat.Bead.SetActive(true);
         ObjectFactory.Instance.WarpBeat.Bead.transform.position = this.transform.position;
 
