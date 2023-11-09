@@ -54,7 +54,7 @@ namespace map
                     int num = int.Parse(waveDate[row][col]);
 
                     // 設置座標
-                    Vector2 spanPos = new Vector2(ObjectFactory.Instance.Player.RetryPos.x + col, 5f - row);
+                    Vector2 spanPos = new Vector2(ObjectFactory.Instance.Player.RetryPos.x + col, Camera.main.orthographicSize - row);
 
                     // 設置
                     MonoBehaviour.Instantiate(instancObject[num], spanPos, Quaternion.identity, parent.transform);
