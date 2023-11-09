@@ -32,7 +32,7 @@ public class BaseMap : MonoBehaviour
             {
                 await UniTask.WaitUntil(() => ObjectFactory.Instance.Map != null);
 
-                if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Instance.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0)
+                if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Instance.Map.UpdateMapNum.Value & (int)Enums.MapOrientation.TOP) == 0)
                     make.CSVload(fileName[(int)x], stageItems, this.gameObject);
             });
     }
