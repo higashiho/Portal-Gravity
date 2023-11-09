@@ -143,6 +143,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   changeTagetObj: {fileID: 0}
+--- !u!114 &8602893911305058832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299731277024107699}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e70c5aa876095404f93e1a9b811cf0ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  changeTagetObj: {fileID: 0}
 --- !u!4 &8299731277024107700 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7047180852971891921, guid: ebe11dc444d892a44984eb10d5d2bea3, type: 3}
