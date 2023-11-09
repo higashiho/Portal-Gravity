@@ -46,7 +46,7 @@ public class MethodFactory : MonoBehaviour
     // 画面内にいるか確認
     public static bool CheckOnCamera(GameObject checkingObject)
     {
-        return checkingObject.transform.position.x < ObjectFactory.Player.RetryPos.x - 0.5f  ||
+        return checkingObject.transform.position.x < ObjectFactory.Instance.Player.RetryPos.x - 0.5f  ||
                 checkingObject.transform.position.y < Camera.main.transform.position.y - Camera.main.orthographicSize  || 
                 checkingObject.transform.position.y > Camera.main.transform.position.y + Camera.main.orthographicSize; 
     }

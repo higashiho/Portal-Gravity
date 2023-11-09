@@ -16,6 +16,7 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<bool> isRetry = new ReactiveProperty<bool>();
     public ReactiveProperty<bool> IsRetry => isRetry;
     private ReactiveProperty<bool> isUpdateRetrayPos = new ReactiveProperty<bool>();
+    private ReactiveProperty<Enums.MapOrientation> mapOrientation = new ReactiveProperty<Enums.MapOrientation>();
 
     [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
@@ -81,12 +82,6 @@ public class BasePlayer : MonoBehaviour
         ObjectFactory.Instance = new ObjectFactory();
         RetryPos = this.transform.position;
 
-        
-        cameraStagePos[(int)Enums.MapNum.STAGE_1] = cameraStage1Pos;
-        cameraStagePos[(int)Enums.MapNum.STAGE_2] = cameraStage2Pos;
-        cameraStagePos[(int)Enums.MapNum.STAGE_3_TOP] = cameraStage3_UPPos;
-        cameraStagePos[(int)Enums.MapNum.STAGE_3_BOTTOM] = cameraStage3_DOWNPos;
-
 
         cameraStagePos = new Vector3[]
         {
@@ -111,8 +106,8 @@ public class BasePlayer : MonoBehaviour
                 moving.SetValueAndForceNotify(Input.GetAxis("Horizontal"));
                 isChangeAbility.Value = Input.GetKeyDown(KeyCode.E); 
                 IsRetry.Value = MethodFactory.CheckOnCamera(this.gameObject);
-                ObjectFactory.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.WarpBeat.gameObject);
-                isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Map.UpdateMapNum.Value] &&
+                ObjectFactory.Instance.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.Instance.WarpBeat.gameObject);
+                isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value] &&
                                             this.transform.position.x >= Camera.main.transform.position.x + 8.5f;
 
                 if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.Instance.WarpBeat.Bead.activeSelf)
@@ -161,8 +156,8 @@ public class BasePlayer : MonoBehaviour
             {
                 // Retrypos更新
                 RetryPos = new Vector3(
-                    Mathf.Round(this.transform.position.x) + Vector3.right.x,
-                    Constant.RETRY_POS_Y[(int)ObjectFactory.Map.UpdateMapNum.Value + 1],
+                    Mathf.Round(this.transform.position.x * 10) / 10 + Vector3.right.x,
+                    Constant.RETRY_POS_Y[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value + 1],
                     this.transform.position.z
                 );
                 
@@ -182,15 +177,25 @@ public class BasePlayer : MonoBehaviour
 
                 //this.transform.position = RetryPos;
 
-                if((int)ObjectFactory.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2)
+                if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2)
                     // 前のステージのオブジェクトを非表示
-                    ObjectFactory.Map.DeleteStageObject();
+                    ObjectFactory.Instance.Map.DeleteStageObject();
 
                 // 次のステージを生成
-                ObjectFactory.Map.MapStateincrement();
+                ObjectFactory.Instance.Map.MapStateincrement();
 
-                
+                moveToNextStage((int)ObjectFactory.Instance.Map.UpdateMapNum.Value);
             });
+
+
+        // マップ上か下かのイベント    
+        mapOrientation
+                .TakeUntilDestroy(this)
+                .Where(x => x != Enums.MapOrientation.DEFAULT)
+                .Subscribe(x => 
+                {
+                    //moveToNextStage(x == Enums.MapOrientation.TOP ? (int)Enums.MapNum.STAGE_3 + 1 : );
+                });
     }
     // 挙動
     protected void setMoveSubscribe()
@@ -360,74 +365,81 @@ public class BasePlayer : MonoBehaviour
     }
 
 
-    /// <summary>
-    /// カメラを次のステージの座標に移動させる
-    /// </summary>
-    protected void moveCamera()
-    {
-        // プレイヤーとカメラのx軸座標の距離の絶対値
-        playerToCameraDistanceX = Mathf.Abs(RetryPos.x - Camera.main.transform.position.x);
+    // /// <summary>
+    // /// カメラを次のステージの座標に移動させる
+    // /// </summary>
+    // protected void moveCamera()
+    // {
+    //     // プレイヤーとカメラのx軸座標の距離の絶対値
+    //     playerToCameraDistanceX = Mathf.Abs(this.transform.position.x - Camera.main.transform.position.x);
 
-        // プレイヤーと次のステージのカメラx軸座標の距離の絶対値
-        playerToNextCameraDistanceX = Mathf.Abs(RetryPos.x - cameraStagePos[(int)ObjectFactory.Map.UpdateMapNum.Value + 1].x);
+    //     // プレイヤーと次のステージのカメラx軸座標の距離の絶対値
+    //     playerToNextCameraDistanceX = Mathf.Abs(this.transform.position.x - cameraStagePos[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value].x);
 
-        // プレイヤーとカメラのy軸座標の距離の絶対値
-        playerToCameraDirectionY = Mathf.Abs(RetryPos.y - Camera.main.transform.position.y);
+    //     // プレイヤーとカメラのy軸座標の距離の絶対値
+    //     playerToCameraDirectionY = Mathf.Abs(this.transform.position.y - Camera.main.transform.position.y);
 
         
-        if((int)ObjectFactory.Map.UpdateMapNum.Value >= (int)Enums.MapNum.STAGE_3_TOP)
-        {
-            // プレイヤーとステージ3UPのカメラのy軸座標の距離の絶対値
-            playerToStage3UPCameraDirectionY = Mathf.Abs(RetryPos.y - 
-                                                cameraStagePos[(int)ObjectFactory.Map.UpdateMapNum.Value - 1].y);
+    //     if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value >= (int)Enums.MapNum.STAGE_3_TOP)
+    //     {
+    //         // プレイヤーとステージ3UPのカメラのy軸座標の距離の絶対値
+    //         playerToStage3UPCameraDirectionY = Mathf.Abs(this.transform.position.y - 
+    //                                             cameraStagePos[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value - 1].y);
 
-            // プレイヤーとステージ3DOWNのカメラのy軸座標の距離の絶対値
-            playerToStage3DOWNCameraDirectionY = Mathf.Abs(RetryPos.y - 
-                                                    cameraStagePos[(int)ObjectFactory.Map.UpdateMapNum.Value + 1].y);
-        }
+    //         // プレイヤーとステージ3DOWNのカメラのy軸座標の距離の絶対値
+    //         playerToStage3DOWNCameraDirectionY = Mathf.Abs(this.transform.position.y - 
+    //                                                 cameraStagePos[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value + 1].y);
+    //     }
 
 
-        switch(ObjectFactory.Map.UpdateMapNum.Value)
-        {
-            case Enums.MapNum.STAGE_1:
-                
-
-            case Enums.MapNum.STAGE_2:
-                moveToNextStage(playerToCameraDistanceX, playerToNextCameraDistanceX);
-                break;
+    //     switch(ObjectFactory.Instance.Map.UpdateMapNum.Value)
+    //     {
+    //         case Enums.MapNum.STAGE_1:
+    //         case Enums.MapNum.STAGE_2:
+    //             moveToNextStage(playerToCameraDistanceX, playerToNextCameraDistanceX);
+    //             break;
             
-            case Enums.MapNum.STAGE_3_TOP:
-                moveToNextStage(playerToCameraDirectionY, playerToStage3DOWNCameraDirectionY);
-                break;
+    //         case Enums.MapNum.STAGE_3_TOP:
+    //             moveToNextStage(playerToCameraDirectionY, playerToStage3DOWNCameraDirectionY);
+    //             break;
 
-            case Enums.MapNum.STAGE_3_BOTTOM:
-                moveToNextStage(playerToCameraDirectionY, playerToStage3UPCameraDirectionY);
-                break;
-        }
+    //         case Enums.MapNum.STAGE_3_BOTTOM:
+    //             moveToNextStage(playerToCameraDirectionY, playerToStage3UPCameraDirectionY);
+    //             break;
+    //     }
        
-    }
+    // }
+
+
+    // /// <summary>
+    // /// 次のステージへ移動
+    // /// </summary>
+    // private void moveToNextStage(float playerDirection, float playerNextStagetDirection)
+    // {
+    //     // プレイヤーの座標が今のカメラとの距離よりも、次のステージのカメラとの距離の方が近くなったら
+    //     if(playerDirection > playerNextStagetDirection)
+    //     {
+    //         Debug.Log("mm");
+            
+    //         int ii = ObjectFactory.Instance.Map.UpdateMapNum.Value < Enums.MapNum.STAGE_3_TOP ||
+    //                 ((int)ObjectFactory.Instance.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0 ?
+    //                         (int)ObjectFactory.Instance.Map.UpdateMapNum.Value + 1 : (int)ObjectFactory.Instance.Map.UpdateMapNum.Value - 1;
+
+
+    //         Camera.main.transform.DOMove(cameraStagePos[ii], Constant.CAMERA_MOVE_TIME).SetEase(Ease.OutSine);
+    //         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
+    //     }
+    // }
 
 
     /// <summary>
     /// 次のステージへ移動
     /// </summary>
-    private void moveToNextStage(float playerDirection, float playerNextStagetDirection)
+    private void moveToNextStage(int num)
     {
-        // プレイヤーの座標が今のカメラとの距離よりも、次のステージのカメラとの距離の方が近くなったら
-        if(playerDirection > playerNextStagetDirection)
-        {
-            Debug.Log("mm");
-            
-            int ii = ObjectFactory.Map.UpdateMapNum.Value < Enums.MapNum.STAGE_3_TOP ||
-                    ((int)ObjectFactory.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0 ?
-                            (int)ObjectFactory.Map.UpdateMapNum.Value + 1 : (int)ObjectFactory.Map.UpdateMapNum.Value - 1;
-
-
-            Camera.main.transform.DOMove(cameraStagePos[ii], Constant.CAMERA_MOVE_TIME).SetEase(Ease.InSine);
-            this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InSine);
-        }
+        Camera.main.transform.DOMove(cameraStagePos[num], Constant.CAMERA_MOVE_TIME).SetEase(Ease.OutSine);
+        this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
     }
-
 
 
 }

@@ -12,9 +12,9 @@ public class Constant
 
 
     // 各ステージのカメラの座標====================================
-    public const float CAMERA_STAGE2_POS_X = 18.5f;
+    public const float CAMERA_STAGE2_POS_X = 18.0f;
 
-    public const float CAMERA_STAGE3_POS_X = 37.0f;
+    public const float CAMERA_STAGE3_POS_X = 36.0f;
 
     public const float CAMERA_STAGE3_DOWN_POS_Y = -10.0f;
     // 各ステージのカメラの座標====================================

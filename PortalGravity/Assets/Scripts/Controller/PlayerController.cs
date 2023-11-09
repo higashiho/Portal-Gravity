@@ -15,10 +15,4 @@ public class PlayerController : BasePlayer
         setMoveSubscribe();
     }
 
-
-    void Update()
-    {        
-        // カメラ移動
-        moveCamera();
-    }
 }

@@ -5,6 +5,8 @@ using map;
 using UniRx;
 using UnityEditor.EditorTools;
 using UnityEngine;
+using Cysharp.Threading;
+using Cysharp.Threading.Tasks;
 
 public class BaseMap : MonoBehaviour
 {
@@ -26,11 +28,12 @@ public class BaseMap : MonoBehaviour
         UpdateMapNum
             .TakeUntilDestroy(this)
             .Where(x => x != Enums.MapNum.DEFAULT)
-            .Subscribe(x => 
+            .Subscribe(async x => 
             {
-                if((int)ObjectFactory.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0)
-                    make.CSVload(fileName[(int)x], stageItems, this.gameObject);
+                await UniTask.WaitUntil(() => ObjectFactory.Instance.Map != null);
 
+                if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Instance.Map.UpdateMapNum.Value & (int)Enums.UpDown.TOP) == 0)
+                    make.CSVload(fileName[(int)x], stageItems, this.gameObject);
             });
     }
     
