@@ -43,6 +43,13 @@ public class BasePlayer : MonoBehaviour
     private bool nowChangeGravity = false;
 
 
+    private ReactiveProperty<Enums.MapOrientation> updateMapOpieration = new ReactiveProperty<Enums.MapOrientation>(Enums.MapOrientation.DEFAULT);
+
+
+    private Rigidbody2D playerRigidBody = new Rigidbody2D();
+
+
+
     // 各ステージのカメラの座標の配列
     protected Vector3[] cameraStagePos = new Vector3[4];
     
@@ -66,6 +73,8 @@ public class BasePlayer : MonoBehaviour
             new Vector3(Constant.CAMERA_STAGE3_POS_X, 0, Camera.main.transform.position.z),
             new Vector3(Constant.CAMERA_STAGE3_POS_X, Constant.CAMERA_STAGE3_DOWN_POS_Y, Camera.main.transform.position.z)      
         };
+
+        playerRigidBody = this.GetComponent<Rigidbody2D>();
         
     }
 
@@ -122,7 +131,19 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ =>
             {
-                StageRetry();
+                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_1 || ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_2)
+                {
+                    StageRetry();
+                }
+                else if(this.transform.position.x >= Camera.main.transform.position.x)
+                {
+                    StageRetry();
+                }
+                else
+                {
+                    playerRigidBody.velocity = Vector2.zero;
+                }
+                    
             });
 
         isUpdateRetrayPos
@@ -156,13 +177,15 @@ public class BasePlayer : MonoBehaviour
 
 
         // マップ上か下かのイベント    
-        mapOrientation
-                .TakeUntilDestroy(this)
-                .Where(x => x != Enums.MapOrientation.DEFAULT)
-                .Subscribe(x => 
-                {
-                    //moveToNextStage(x == Enums.MapOrientation.TOP ? (int)Enums.MapNum.STAGE_3 + 1 : );
-                });
+        updateMapOpieration
+            .TakeUntilDestroy(this)
+            .Where(x => this.transform.position.x <= Camera.main.transform.position.x &&
+                        this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize)
+            .Subscribe(x => 
+            {
+                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_3)
+                    moveToNextStage(x == Enums.MapOrientation.TOP ? (int)Enums.MapNum.STAGE_3 + 1 : (int)Enums.MapNum.STAGE_3);
+            });
     }
     // 挙動
     protected void setMoveSubscribe()
@@ -335,6 +358,8 @@ public class BasePlayer : MonoBehaviour
          ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
     }
 
+
+
     /// <summary>
     /// 次のステージへ移動
     /// </summary>
@@ -348,6 +373,8 @@ public class BasePlayer : MonoBehaviour
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
     }
+
+
 
     /// <summary>
     /// ステージオブジェクトを格納する
