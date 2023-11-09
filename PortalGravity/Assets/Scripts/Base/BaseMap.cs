@@ -51,7 +51,9 @@ public class BaseMap : MonoBehaviour
     }
 
 
-    // 前のステージのオブジェクトを非アクティブにする
+    /// <summary>
+    /// 前のステージのオブジェクトを非アクティブにする
+    /// </summary>
     public void DeleteStageObject()
     {
         

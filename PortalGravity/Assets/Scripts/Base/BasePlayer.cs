@@ -144,18 +144,7 @@ public class BasePlayer : MonoBehaviour
                 this.transform.eulerAngles = Vector3.zero;
 
 
-                // 生成したステージオブジェクトを格納する配列
-                Transform[] mapchiledlen = new Transform[ObjectFactory.Instance.Map.transform.childCount];
-
-                ObjectFactory.Instance.Map.beforeStageObjects = new Transform[ObjectFactory.Instance.Map.transform.childCount];
-
-                // ステージのオブジェクトを登録
-                for(int i = 0; i < mapchiledlen.Length; i++)
-                {
-                    mapchiledlen[i] = ObjectFactory.Instance.Map.transform.GetChild(i);
-
-                    ObjectFactory.Instance.Map.beforeStageObjects[i] = mapchiledlen[i];
-                }
+                setStageObject();
                 
 
                 // 次のステージを生成
@@ -338,8 +327,12 @@ public class BasePlayer : MonoBehaviour
         this.GetComponent<Rigidbody2D>().gravityScale = 1;
         ObjectFactory.Instance.WarpBeat.Rb.gravityScale = 1;
 
+        setStageObject();
+
+        ObjectFactory.Instance.Map.DeleteStageObject();
+
         // // ステージ生成し直し
-        // ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
+         ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
     }
 
     /// <summary>
@@ -354,6 +347,25 @@ public class BasePlayer : MonoBehaviour
             );
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
+    }
+
+    /// <summary>
+    /// ステージオブジェクトを格納する
+    /// </summary>
+    private void setStageObject()
+    {
+        // 生成したステージオブジェクトを格納する配列
+        Transform[] mapchiledlen = new Transform[ObjectFactory.Instance.Map.transform.childCount];
+
+        ObjectFactory.Instance.Map.beforeStageObjects = new Transform[ObjectFactory.Instance.Map.transform.childCount];
+
+        // ステージのオブジェクトを登録
+        for(int i = 0; i < mapchiledlen.Length; i++)
+        {
+            mapchiledlen[i] = ObjectFactory.Instance.Map.transform.GetChild(i);
+
+            ObjectFactory.Instance.Map.beforeStageObjects[i] = mapchiledlen[i];
+        }
     }
 
 
