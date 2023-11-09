@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4623296513935431559}
   m_Layer: 0
   m_Name: Stinger (2)
-  m_TagString: Untagged
+  m_TagString: Sting
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -126,7 +126,7 @@ GameObject:
   - component: {fileID: 3390678469954122236}
   m_Layer: 0
   m_Name: Stinger
-  m_TagString: Untagged
+  m_TagString: Sting
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 1784650162884845210}
   m_Layer: 0
   m_Name: Stinger (1)
-  m_TagString: Untagged
+  m_TagString: Sting
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
