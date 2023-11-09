@@ -8,7 +8,7 @@ public class Constant
     public static readonly float[] RETRY_POS_Y = {-1f, 1f, 2f};
 
     // カメラの移動時間
-    public const float CAMERA_MOVE_TIME = 0.5f;
+    public const float CAMERA_MOVE_TIME = 1.5f;
 
 
     // 各ステージのカメラの座標====================================

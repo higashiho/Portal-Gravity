@@ -19,6 +19,9 @@ public class BaseMap : MonoBehaviour
 
     private MapMake make = new MapMake();
 
+    // 消すステージのオブジェクト配列
+    public Transform[] beforeStageObjects;
+
     // 現在のplayerがいるステージ
     private ReactiveProperty<Enums.MapNum> updateMapNum = new ReactiveProperty<Enums.MapNum>(Enums.MapNum.STAGE_1);
     public ReactiveProperty<Enums.MapNum> UpdateMapNum => updateMapNum;
@@ -33,7 +36,10 @@ public class BaseMap : MonoBehaviour
                 await UniTask.WaitUntil(() => ObjectFactory.Instance.Map != null);
 
                 if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value <= (int)Enums.MapNum.STAGE_2 || ((int)ObjectFactory.Instance.Map.UpdateMapNum.Value & (int)Enums.MapOrientation.TOP) == 0)
+                {
                     make.CSVload(fileName[(int)x], stageItems, this.gameObject);
+                }
+                    
             });
     }
     
@@ -48,7 +54,8 @@ public class BaseMap : MonoBehaviour
     // 前のステージのオブジェクトを非アクティブにする
     public void DeleteStageObject()
     {
-        foreach(Transform stageObject in this.gameObject.transform)
+        
+        foreach(Transform stageObject in beforeStageObjects)
         {
             stageObject.gameObject.SetActive(false);
         }
