@@ -265,10 +265,10 @@ public class BasePlayer : MonoBehaviour
         var hit = Physics2D.Raycast(ray.origin, ray.direction);
         if (hit.collider)
         {
-            if(hit.collider.gameObject.tag == "GravityBox")
+            if(hit.collider.gameObject.tag == "GravityBox" && hit.collider.gameObject.tag == "ReverseSting")
                 targetGravityBox = hit.collider.gameObject;
             else if(hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "GroundSting" || 
-            hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "Spear")
+                        hit.collider.transform.parent != null && hit.collider.transform.parent.gameObject.tag == "Spear")
                 targetGravityBox = hit.collider.transform.parent.gameObject;
             else
                 targetGravityBox = null;

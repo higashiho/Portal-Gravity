@@ -8,6 +8,5 @@ public class ObjectFactory
     public PlayerController Player;
     public MapController Map;
     public WarpBeatController WarpBeat;
-    public GravityBoxController GravityBox;
     public List<SpearController> Spears = new List<SpearController>();
 }
