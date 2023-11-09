@@ -21,9 +21,15 @@ public class Enums
     public enum MapNum
     {
         DEFAULT = -1,
-        STAGE_1 = 0,
-        STAGE_2,
-        STAGE_3_UP,
-        STAGE_3_DOWN,
+        STAGE_1 = 0x0000,
+        STAGE_2 = 0b0001,
+        STAGE_3 = 0b0010,
+    }
+
+    public enum MapOrientation
+    {
+        DEFAULT = -1,
+        TOP = 0b01,
+        BOTTOM = 0b10
     }
 }

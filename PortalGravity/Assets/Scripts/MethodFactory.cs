@@ -47,7 +47,7 @@ public class MethodFactory : MonoBehaviour
     public static bool CheckOnCamera(GameObject checkingObject)
     {
         return checkingObject.transform.position.x < ObjectFactory.Instance.Player.RetryPos.x - 0.5f  ||
-                checkingObject.transform.position.y < Camera.main.ScreenToWorldPoint(Vector3.down * Screen.height).y || 
-                checkingObject.transform.position.y > Camera.main.ScreenToWorldPoint(Vector3.up * Screen.height).y;
+                checkingObject.transform.position.y < Camera.main.transform.position.y - Camera.main.orthographicSize  || 
+                checkingObject.transform.position.y > Camera.main.transform.position.y + Camera.main.orthographicSize; 
     }
 }
