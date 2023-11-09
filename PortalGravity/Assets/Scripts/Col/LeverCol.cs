@@ -8,19 +8,35 @@ public class LeverCol : MonoBehaviour
     [SerializeField, Tooltip("消すバリア対象")]
     private GameObject targetBarrier = default;
 
+    private bool onBarrierBrack = true;
+
+    private void Start()
+    {
+        targetBarrier = GameObject.FindWithTag("Barriers");
+    }
+
     private void OnTriggerEnter2D(Collider2D other) 
     {
-        targetBarrier ??= GameObject.FindGameObjectWithTag("Barriers").transform.GetChild(1).gameObject;
 
-        if(!targetBarrier || !targetBarrier.activeSelf) return;
+        if(!onBarrierBrack) return;
 
 
-        if(other.gameObject.tag == "Player" && ObjectFactory.Instance.Player.IsGrounded)
+        if(other.gameObject.tag == "Player" && other.GetComponent<PlayerController>().IsGrounded)
         {
-            targetBarrier.SetActive(false);
-            this.transform.GetChild(1).DOMoveY(-this.transform.position.y, 1).SetEase(Ease.Linear).SetLink(this.gameObject);
-            this.transform.GetChild(1).DORotate(Vector3.forward * -this.transform.position.y, 1).SetEase(Ease.Linear).SetLink(this.gameObject);
-            this.transform.GetChild(2).DOMoveY(-this.transform.position.y, 1).SetEase(Ease.Linear).SetLink(this.gameObject);
+            
+            for(int i = targetBarrier.transform.childCount - 1; i > -1; i--)
+            {
+                if(targetBarrier.transform.GetChild(i).gameObject.activeSelf)
+                {
+                    targetBarrier.transform.GetChild(i).gameObject.SetActive(false);
+                    onBarrierBrack = false;
+                    break;
+                }
+            }
+
+            var moveChild = this.transform.GetChild(1);
+
+            moveChild.DORotate(moveChild.eulerAngles - Vector3.forward * 90f, 2).SetEase(Ease.Linear).SetLink(this.gameObject);
         }    
     }
 }

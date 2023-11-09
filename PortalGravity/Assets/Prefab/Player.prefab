@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 626025461}
   - component: {fileID: 626025460}
   - component: {fileID: 1225163064}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -286,6 +286,10 @@ PrefabInstance:
     - target: {fileID: 8382376550141875, guid: d02754b130286924a99f67095ef396a2, type: 3}
       propertyPath: m_Name
       value: 'WarpBead '
+      objectReference: {fileID: 0}
+    - target: {fileID: 8382376550141875, guid: d02754b130286924a99f67095ef396a2, type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8382376550141875, guid: d02754b130286924a99f67095ef396a2, type: 3}
       propertyPath: m_IsActive

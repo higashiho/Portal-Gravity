@@ -347,8 +347,6 @@ GameObject:
   - component: {fileID: 8514127352663808215}
   - component: {fileID: 1098922095}
   - component: {fileID: 1098922096}
-  - component: {fileID: 1098922097}
-  - component: {fileID: 1098922098}
   m_Layer: 0
   m_Name: GravityBox
   m_TagString: Ground
@@ -427,33 +425,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2, y: 2}
   m_EdgeRadius: 0
---- !u!114 &1098922097
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4304001624295705207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a5ccca617d926b4cb0327cdf67bd06c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isChangeGravityFlag: 0
-  isGrounded: 1
-  moveDirection: {x: 0, y: 0, z: 0}
---- !u!114 &1098922098
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4304001624295705207}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 592468fa400258a4ab5f507ec14d92cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5131183854069678116
 GameObject:
   m_ObjectHideFlags: 0
