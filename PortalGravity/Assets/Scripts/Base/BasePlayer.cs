@@ -16,7 +16,6 @@ public class BasePlayer : MonoBehaviour
     private ReactiveProperty<bool> isRetry = new ReactiveProperty<bool>();
     public ReactiveProperty<bool> IsRetry => isRetry;
     private ReactiveProperty<bool> isUpdateRetrayPos = new ReactiveProperty<bool>();
-    private ReactiveProperty<Enums.MapOrientation> mapOrientation = new ReactiveProperty<Enums.MapOrientation>();
 
     [SerializeField, Tooltip("移動スピード")]
     private float moveSpeed = default;
@@ -42,6 +41,10 @@ public class BasePlayer : MonoBehaviour
     // 重力変化挙動中か
     private bool nowChangeGravity = false;
 
+
+    private ReactiveProperty<bool> updateMapOpierationFall = new ReactiveProperty<bool>();
+
+    private ReactiveProperty<bool> updateMapOpierationRise = new ReactiveProperty<bool>();
 
     private ReactiveProperty<Enums.MapOrientation> updateMapOpieration = new ReactiveProperty<Enums.MapOrientation>(Enums.MapOrientation.DEFAULT);
 
@@ -83,12 +86,12 @@ public class BasePlayer : MonoBehaviour
             _ => default
         };
                     
-        abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-        DOTween.Kill(abilityText);
-        abilityText.text = ability.ToString();
+        // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+        // DOTween.Kill(abilityText);
+        // abilityText.text = ability.ToString();
         
-        await UniTask.Delay(300);
-        abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+        // await UniTask.Delay(300);
+        // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
 
     }
 
@@ -110,6 +113,12 @@ public class BasePlayer : MonoBehaviour
                 ObjectFactory.Instance.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.Instance.WarpBeat.gameObject);
                 isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value] &&
                                             this.transform.position.x >= Camera.main.transform.position.x + 8.5f;
+                updateMapOpierationFall.Value = this.transform.position.x <= Camera.main.transform.position.x &&
+                                                this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize &&
+                                                updateMapOpieration.Value == Enums.MapOrientation.TOP;
+                updateMapOpierationRise.Value = this.transform.position.x <= Camera.main.transform.position.x &&
+                                                this.transform.position.y >= Camera.main.transform.position.y - Camera.main.orthographicSize &&
+                                                updateMapOpieration.Value == Enums.MapOrientation.BOTTOM;
 
                 if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.Instance.WarpBeat.Bead.activeSelf)
                 {
@@ -147,19 +156,15 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ =>
             {
-                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_1 || ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_2)
-                {
-                    StageRetry();
-                }
-                else if(this.transform.position.x >= Camera.main.transform.position.x)
-                {
-                    StageRetry();
-                }
-                else
+                if(this.transform.position.x <= Camera.main.transform.position.x &&
+                (int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3)
                 {
                     playerRigidBody.velocity = Vector2.zero;
                 }
-                    
+                else
+                {
+                    StageRetry();
+                }  
             });
 
         isUpdateRetrayPos
@@ -189,18 +194,31 @@ public class BasePlayer : MonoBehaviour
 
                 // カメラを次のステージに移動させる
                 moveToNextStage((int)ObjectFactory.Instance.Map.UpdateMapNum.Value);
+
+                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_3)
+                {
+                    updateMapOpieration.Value = Enums.MapOrientation.TOP;
+                }
             });
 
 
         // マップ上か下かのイベント    
-        updateMapOpieration
+        updateMapOpierationFall
             .TakeUntilDestroy(this)
-            .Where(x => this.transform.position.x <= Camera.main.transform.position.x &&
-                        this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize)
+            .Where(x => x)
             .Subscribe(x => 
             {
-                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_3)
-                    moveToNextStage(x == Enums.MapOrientation.TOP ? (int)Enums.MapNum.STAGE_3 + 1 : (int)Enums.MapNum.STAGE_3);
+                Debug.Log("ff");
+                moveToNextStage((int)Enums.MapNum.STAGE_3 + 1);
+            });
+
+        updateMapOpierationRise
+            .TakeUntilDestroy(this)
+            .Where(x => x)
+            .Subscribe(x =>
+            {
+                Debug.Log("rr");
+                moveToNextStage((int)Enums.MapNum.STAGE_3);
             });
     }
     // 挙動
@@ -303,12 +321,12 @@ public class BasePlayer : MonoBehaviour
                     ability = Enums.PlayerAbility.WARP;
                     this.GetComponent<SpriteRenderer>().color = Color.red;
                     
-                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-                    DOTween.Kill(abilityText);
-                    abilityText.text = ability.ToString();
+                    // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    // DOTween.Kill(abilityText);
+                    // abilityText.text = ability.ToString();
                     
-                    await UniTask.Delay(300);
-                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                    // await UniTask.Delay(300);
+                    // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
                 
                 }
                 else
@@ -316,12 +334,12 @@ public class BasePlayer : MonoBehaviour
                     ability = Enums.PlayerAbility.GRAVITY;
                     this.GetComponent<SpriteRenderer>().color = Color.blue;
                     
-                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-                    DOTween.Kill(abilityText);
-                    abilityText.text = ability.ToString();
+                    // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    // DOTween.Kill(abilityText);
+                    // abilityText.text = ability.ToString();
                     
-                    await UniTask.Delay(300);
-                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                    // await UniTask.Delay(300);
+                    // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
                 }
             });
     
@@ -420,9 +438,15 @@ public class BasePlayer : MonoBehaviour
     {
         Camera.main.transform.DOMove(cameraStagePos[num], Constant.CAMERA_MOVE_TIME).SetEase(Ease.OutSine)
         .OnComplete(() =>
+        {
             // 前のステージのオブジェクトを非表示
-            ObjectFactory.Instance.Map.DeleteStageObject()
+            ObjectFactory.Instance.Map.DeleteStageObject();
+        }
+            
             );
+
+        if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3 &&
+            this.transform.position.x <= Camera.main.transform.position.x) return;
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
     }
