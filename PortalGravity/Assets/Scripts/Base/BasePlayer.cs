@@ -46,7 +46,7 @@ public class BasePlayer : MonoBehaviour
 
     private ReactiveProperty<bool> updateMapOpierationRise = new ReactiveProperty<bool>();
 
-    private ReactiveProperty<Enums.MapOrientation> updateMapOpieration = new ReactiveProperty<Enums.MapOrientation>(Enums.MapOrientation.DEFAULT);
+    protected ReactiveProperty<Enums.MapOrientation> updateMapOpieration = new ReactiveProperty<Enums.MapOrientation>(Enums.MapOrientation.DEFAULT);
 
 
     private Rigidbody2D playerRigidBody = new Rigidbody2D();
@@ -113,12 +113,8 @@ public class BasePlayer : MonoBehaviour
                 ObjectFactory.Instance.WarpBeat.IsOnCamera.Value = !MethodFactory.CheckOnCamera(ObjectFactory.Instance.WarpBeat.gameObject);
                 isUpdateRetrayPos.Value = IsNextStages[(int)ObjectFactory.Instance.Map.UpdateMapNum.Value] &&
                                             this.transform.position.x >= Camera.main.transform.position.x + 8.5f;
-                updateMapOpierationFall.Value = this.transform.position.x <= Camera.main.transform.position.x &&
-                                                this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize &&
-                                                updateMapOpieration.Value == Enums.MapOrientation.TOP;
-                updateMapOpierationRise.Value = this.transform.position.x <= Camera.main.transform.position.x &&
-                                                this.transform.position.y >= Camera.main.transform.position.y - Camera.main.orthographicSize &&
-                                                updateMapOpieration.Value == Enums.MapOrientation.BOTTOM;
+                updateMapOpierationFall.Value = updateMapOpieration.Value == Enums.MapOrientation.BOTTOM;
+                updateMapOpierationRise.Value = updateMapOpieration.Value == Enums.MapOrientation.TOP;
 
                 if(ability == Enums.PlayerAbility.WARP && !ObjectFactory.Instance.WarpBeat.Bead.activeSelf)
                 {
@@ -156,15 +152,54 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ =>
             {
-                if(this.transform.position.x <= Camera.main.transform.position.x &&
-                (int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3)
+                // 画面外に出た時にステージDOWNの判定を拾ったら
+                if(updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
                 {
-                    playerRigidBody.velocity = Vector2.zero;
+                    // ステージ３DOWNに移動した後のプレイヤーの座標
+                    Vector3 stage3FallAfterPos = new Vector3(
+                        this.transform.position.x,
+                        this.transform.position.y - 1.0f,
+                        this.transform.position.z
+                    );
+
+                    this.transform.DOMove(stage3FallAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
+                    .OnStart(() =>
+                    {
+                        playerRigidBody.velocity = Vector2.zero;
+                        //playerRigidBody.gravityScale = 0;
+                    })
+                    .OnComplete(() =>
+                    {
+                        //playerRigidBody.gravityScale = 1;
+                    });
+                }
+
+                // 画面外に出た時にステージUPの判定を拾ったら
+                else if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
+                {
+                    // ステージ３UPに移動した後のプレイヤーの座標
+                    Vector3 stage3RiseAfterPos = new Vector3(
+                        this.transform.position.x,
+                        this.transform.position.y + 1.0f,
+                        this.transform.position.z
+                    );
+
+                    this.transform.DOMove(stage3RiseAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
+                    .OnStart(() =>
+                    {
+                        playerRigidBody.velocity = Vector2.zero;
+                        //playerRigidBody.gravityScale = 0;
+                    })
+                    .OnComplete(() =>
+                    {
+                        //playerRigidBody.gravityScale = 1;
+                    });
                 }
                 else
                 {
                     StageRetry();
-                }  
+                }    
+                
             });
 
         isUpdateRetrayPos
@@ -194,11 +229,6 @@ public class BasePlayer : MonoBehaviour
 
                 // カメラを次のステージに移動させる
                 moveToNextStage((int)ObjectFactory.Instance.Map.UpdateMapNum.Value);
-
-                if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_3)
-                {
-                    updateMapOpieration.Value = Enums.MapOrientation.TOP;
-                }
             });
 
 
@@ -208,7 +238,7 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(x => 
             {
-                Debug.Log("ff");
+                Debug.Log("fall");
                 moveToNextStage((int)Enums.MapNum.STAGE_3 + 1);
             });
 
@@ -217,7 +247,7 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(x =>
             {
-                Debug.Log("rr");
+                Debug.Log("rise");
                 moveToNextStage((int)Enums.MapNum.STAGE_3);
             });
     }
@@ -441,10 +471,10 @@ public class BasePlayer : MonoBehaviour
         {
             // 前のステージのオブジェクトを非表示
             ObjectFactory.Instance.Map.DeleteStageObject();
-        }
-            
-            );
+            //updateMapOpieration.Value = Enums.MapOrientation.DEFAULT;
+        });
 
+        // ステージ３上下移動の時はリトライしない
         if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3 &&
             this.transform.position.x <= Camera.main.transform.position.x) return;
 
@@ -472,5 +502,32 @@ public class BasePlayer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// プレイヤーがステージ３の上か下かを判断
+    /// </summary>
+    protected void judgeStage3TOPorUNDER()
+    {
+        Debug.Log(updateMapOpieration.Value);
 
+        if(updateMapOpieration.Value == Enums.MapOrientation.DEFAULT &&
+           Camera.main.transform.position.x == cameraStagePos[2].x)
+        {
+            updateMapOpieration.Value = Enums.MapOrientation.TOP;
+        }
+
+        if(this.transform.position.x <= Camera.main.transform.position.x &&
+           this.transform.position.y < Camera.main.transform.position.y - Camera.main.orthographicSize &&
+           updateMapOpieration.Value == Enums.MapOrientation.TOP)
+        {
+            updateMapOpieration.Value = Enums.MapOrientation.BOTTOM;
+            return;
+        }
+
+        if(this.transform.position.x <= Camera.main.transform.position.x &&
+           this.transform.position.y > Camera.main.transform.position.y + Camera.main.orthographicSize &&
+            updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
+        {
+            updateMapOpieration.Value = Enums.MapOrientation.TOP;
+        }
+    }
 }

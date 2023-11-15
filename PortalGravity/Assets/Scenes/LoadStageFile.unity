@@ -1501,6 +1501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e70c5aa876095404f93e1a9b811cf0ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  changeTagetObj: {fileID: 0}
 --- !u!1001 &635055271
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2780,6 +2781,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 626025461, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 860563175829550521, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
       propertyPath: m_Camera
       value: 
@@ -5778,6 +5783,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c18122e9c4ea7a4cab6cb5af6c6be33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  targetBarrier: {fileID: 0}
 --- !u!1001 &2034812180
 PrefabInstance:
   m_ObjectHideFlags: 0
