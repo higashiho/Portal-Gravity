@@ -63,11 +63,14 @@ public class BasePlayer : MonoBehaviour
         false, false, false, false
     };
     public bool[] IsNextStages{get => isNextStages; set => isNextStages = value;}
+
+    private TextMeshProUGUI abilityText = default;
     protected async void initialize()
     {
         ObjectFactory.Instance = new ObjectFactory();
         RetryPos = this.transform.position;
 
+        abilityText = this.gameObject.GetComponentInChildren<TextMeshProUGUI>();
 
         cameraStagePos = new Vector3[]
         {
@@ -86,12 +89,12 @@ public class BasePlayer : MonoBehaviour
             _ => default
         };
                     
-        // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-        // DOTween.Kill(abilityText);
-        // abilityText.text = ability.ToString();
+        abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+        DOTween.Kill(abilityText);
+        abilityText.text = ability.ToString();
         
-        // await UniTask.Delay(300);
-        // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+        await UniTask.Delay(300);
+        abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
 
     }
 
@@ -341,12 +344,12 @@ public class BasePlayer : MonoBehaviour
                     ability = Enums.PlayerAbility.WARP;
                     this.GetComponent<SpriteRenderer>().color = Color.red;
                     
-                    // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-                    // DOTween.Kill(abilityText);
-                    // abilityText.text = ability.ToString();
+                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    DOTween.Kill(abilityText);
+                    abilityText.text = ability.ToString();
                     
-                    // await UniTask.Delay(300);
-                    // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                    await UniTask.Delay(300);
+                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
                 
                 }
                 else
@@ -354,12 +357,12 @@ public class BasePlayer : MonoBehaviour
                     ability = Enums.PlayerAbility.GRAVITY;
                     this.GetComponent<SpriteRenderer>().color = Color.blue;
                     
-                    // abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
-                    // DOTween.Kill(abilityText);
-                    // abilityText.text = ability.ToString();
+                    abilityText.color = new Color(abilityText.color.r, abilityText.color.g, abilityText.color.b , 1);
+                    DOTween.Kill(abilityText);
+                    abilityText.text = ability.ToString();
                     
-                    // await UniTask.Delay(300);
-                    // abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
+                    await UniTask.Delay(300);
+                    abilityText.DOFade(0, 0.7f).SetEase(Ease.OutQuad).SetLink(this.gameObject);
                 }
             });
     
