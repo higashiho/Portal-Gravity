@@ -345,6 +345,13 @@ public class BasePlayer : MonoBehaviour
             
                 if(this.transform.position.x <= RetryPos.x)
                     this.transform.position = new Vector3(RetryPos.x, this.transform.position.y, this.transform.position.z);
+                else if(this.transform.position.x >= Camera.main.transform.position.x + Constant.CAMERA_DRAW_WIDE)
+                    this.transform.position = new Vector3(
+                        Camera.main.transform.position.x + Constant.CAMERA_DRAW_WIDE, 
+                        this.transform.position.y, 
+                        this.transform.position.z
+                    );
+
             });
     }
     
