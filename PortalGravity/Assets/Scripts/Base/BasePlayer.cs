@@ -166,11 +166,6 @@ public class BasePlayer : MonoBehaviour
                     .OnStart(() =>
                     {
                         playerRigidBody.velocity = Vector2.zero;
-                        //playerRigidBody.gravityScale = 0;
-                    })
-                    .OnComplete(() =>
-                    {
-                        //playerRigidBody.gravityScale = 1;
                     });
                 }
 
@@ -188,11 +183,6 @@ public class BasePlayer : MonoBehaviour
                     .OnStart(() =>
                     {
                         playerRigidBody.velocity = Vector2.zero;
-                        //playerRigidBody.gravityScale = 0;
-                    })
-                    .OnComplete(() =>
-                    {
-                        //playerRigidBody.gravityScale = 1;
                     });
                 }
                 else
@@ -507,7 +497,6 @@ public class BasePlayer : MonoBehaviour
     /// </summary>
     protected void judgeStage3TOPorUNDER()
     {
-        Debug.Log(updateMapOpieration.Value);
 
         if(updateMapOpieration.Value == Enums.MapOrientation.DEFAULT &&
            Camera.main.transform.position.x == cameraStagePos[2].x)
