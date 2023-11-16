@@ -461,12 +461,13 @@ public class BasePlayer : MonoBehaviour
         {
             // 前のステージのオブジェクトを非表示
             ObjectFactory.Instance.Map.DeleteStageObject();
-            //updateMapOpieration.Value = Enums.MapOrientation.DEFAULT;
         });
 
         // ステージ３上下移動の時はリトライしない
+        // todo:条件を細分化
         if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3 &&
-            this.transform.position.x <= Camera.main.transform.position.x) return;
+            this.transform.position.x <= Camera.main.transform.position.x)
+            return;
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
     }
