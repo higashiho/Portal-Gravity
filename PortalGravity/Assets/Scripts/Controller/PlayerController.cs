@@ -15,4 +15,12 @@ public class PlayerController : BasePlayer
         setMoveSubscribe();
     }
 
+    void Update()
+    {
+        if(ObjectFactory.Instance.Map.UpdateMapNum.Value == Enums.MapNum.STAGE_3)
+        {
+            judgeStage3TOPorUNDER();
+        }
+    }
+
 }
