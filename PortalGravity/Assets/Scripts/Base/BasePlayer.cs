@@ -162,6 +162,18 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ =>
             {
+                // プレイヤーがステージ３UPで左上のから画面外に出ようとするとリトライ
+                if(Camera.main.transform.position.y == cameraStagePos[2].y &&
+                   this.transform.position.x <= Camera.main.transform.position.x &&
+                   this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize ||
+                   Camera.main.transform.position.y == cameraStagePos[2].y &&
+                   this.transform.position.x >= Camera.main.transform.position.x)
+                {
+                    StageRetry();
+
+                    return;
+                }
+                    
                 // 画面外に出た時にステージDOWNの判定を拾ったら
                 if(updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
                 {
@@ -177,10 +189,14 @@ public class BasePlayer : MonoBehaviour
                     {
                         playerRigidBody.velocity = Vector2.zero;
                     });
-                }
 
-                // 画面外に出た時にステージUPの判定を拾ったら
-                else if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
+                    return;
+                }
+                
+                
+
+                    // 画面外に出た時にステージUPの判定を拾ったら
+                if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
                 {
                     // ステージ３UPに移動した後のプレイヤーの座標
                     Vector3 stage3RiseAfterPos = new Vector3(
@@ -194,12 +210,12 @@ public class BasePlayer : MonoBehaviour
                     {
                         playerRigidBody.velocity = Vector2.zero;
                     });
-                }
-                else
-                {
-                    StageRetry();
-                }    
+
+                    return;
+                }            
                 
+                StageRetry();
+               
             });
 
         isUpdateRetrayPos
@@ -496,12 +512,13 @@ public class BasePlayer : MonoBehaviour
         {
             // 前のステージのオブジェクトを非表示
             ObjectFactory.Instance.Map.DeleteStageObject();
-            //updateMapOpieration.Value = Enums.MapOrientation.DEFAULT;
         });
 
         // ステージ３上下移動の時はリトライしない
+        // todo:条件を細分化
         if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3 &&
-            this.transform.position.x <= Camera.main.transform.position.x) return;
+            this.transform.position.x <= Camera.main.transform.position.x)
+            return;
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
     }
