@@ -12,6 +12,7 @@ public class BaseWarpBead : MonoBehaviour
     private Rigidbody2D rb;
     public Rigidbody2D Rb => rb;
     private LineRenderer lr;
+    public LineRenderer Lr => lr;
 
     [SerializeField, Tooltip("打つ強さ")]
     private float power = 2.0f;
