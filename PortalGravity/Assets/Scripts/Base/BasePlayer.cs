@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
@@ -55,6 +56,9 @@ public class BasePlayer : MonoBehaviour
 
     // 各ステージのカメラの座標の配列
     protected Vector3[] cameraStagePos = new Vector3[4];
+
+    [SerializeField]
+    protected TextMeshProUGUI gameClearText = default;
     
 
 
@@ -104,6 +108,7 @@ public class BasePlayer : MonoBehaviour
         
           this.UpdateAsObservable()
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Subscribe(_ => 
             {
                 if(ObjectFactory.Instance == null || ObjectFactory.Instance.Player == null) return;
@@ -145,6 +150,7 @@ public class BasePlayer : MonoBehaviour
 
         this.UpdateAsObservable()
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Subscribe(_ => 
             {
                 cstMouseRay();
@@ -152,6 +158,7 @@ public class BasePlayer : MonoBehaviour
 
         IsRetry
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(_ =>
             {
@@ -213,9 +220,19 @@ public class BasePlayer : MonoBehaviour
 
         isUpdateRetrayPos
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
-            .Subscribe(_ =>
+            .Subscribe(async _ =>
             {
+                if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value + 1 >= Constant.RETRY_POS_Y.Length)
+                {
+                    gameClearText.gameObject.SetActive(true);
+                    await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Return));
+                    SceneManager.LoadScene("Title");
+                    return;
+                }
+
+
                 // Retrypos更新
                 RetryPos = new Vector3(
                     Mathf.Round(this.transform.position.x * 10) / 10 + Vector3.right.x,
@@ -244,6 +261,7 @@ public class BasePlayer : MonoBehaviour
         // マップ上か下かのイベント    
         updateMapOpierationFall
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(x => 
             {
@@ -253,6 +271,7 @@ public class BasePlayer : MonoBehaviour
 
         updateMapOpierationRise
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(x =>
             {
@@ -267,6 +286,7 @@ public class BasePlayer : MonoBehaviour
         isJumping
             .TakeUntilDestroy(this)
             // ボタンが押された時に、
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             // 接地中であり、
             .Where(_ => IsGrounded)
@@ -281,6 +301,7 @@ public class BasePlayer : MonoBehaviour
                 
         moving
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Subscribe(x =>
             {
                 // そっち方向に移動する
@@ -290,6 +311,7 @@ public class BasePlayer : MonoBehaviour
         isChangeGravity
             .TakeUntilDestroy(this)
             .ThrottleFirst(TimeSpan.FromSeconds(1))
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(async x =>
             {
@@ -343,6 +365,7 @@ public class BasePlayer : MonoBehaviour
         
         isWarpBeadShot
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(_ => 
             {
@@ -351,6 +374,7 @@ public class BasePlayer : MonoBehaviour
 
         isChangeAbility
             .TakeUntilDestroy(this)
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .Where(x => x)
             .Subscribe(async _ => 
             {
@@ -383,6 +407,7 @@ public class BasePlayer : MonoBehaviour
             });
     
         this.UpdateAsObservable()
+            .Where(_ => !gameClearText.gameObject.activeSelf)
             .TakeUntilDestroy(this)
             .Subscribe(_ => 
             { 

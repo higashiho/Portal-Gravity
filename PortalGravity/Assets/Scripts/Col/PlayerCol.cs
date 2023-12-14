@@ -33,8 +33,12 @@ public class PlayerCol : MonoBehaviour
             }
         }
 
-        if(other.transform.parent != null && other.transform.parent.gameObject.tag == "Laser")
+        if(other.transform.parent != null && other.transform.parent.gameObject.tag == "Laser" && other.transform.parent.GetChild(1).gameObject.activeSelf)
         {
+            for(int i = 0; i < other.transform.parent.GetChild(0).childCount; i++)
+            {
+                other.transform.GetChild(i).gameObject.SetActive(!other.transform.parent.GetChild(0).GetChild(i).gameObject.activeSelf);
+            }
             other.transform.parent.GetChild(1).gameObject.SetActive(false);
         }
 
