@@ -411,8 +411,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.2675}
-  m_SizeDelta: {x: 1077.144, y: 300}
+  m_AnchoredPosition: {x: 0, y: -0.000017077}
+  m_SizeDelta: {x: 1199.5278, y: 300}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1468033705
 MonoBehaviour:
@@ -436,15 +436,15 @@ MonoBehaviour:
       m_Calls: []
   m_text: Game Clear!!!!!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5b166ccdf94095d4192adb66eac0f966, type: 2}
+  m_sharedMaterial: {fileID: 7517035564843343592, guid: 5b166ccdf94095d4192adb66eac0f966, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278255514
+  m_fontColor: {r: 0.6050707, g: 1, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -635,5 +635,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: AbilityText
       objectReference: {fileID: 0}
+    - target: {fileID: 8993978227425337934, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 13a271b8a7a111045a98212ab056749a, type: 2}
+    - target: {fileID: 8993978227425337934, guid: b375b9f150971784997ba6448ff9ecca, type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: -3542611418615844863, guid: 13a271b8a7a111045a98212ab056749a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b375b9f150971784997ba6448ff9ecca, type: 3}

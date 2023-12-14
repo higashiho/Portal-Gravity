@@ -172,7 +172,7 @@ public class BasePlayer : MonoBehaviour
                     return;
                 }
 
-                // プレイヤーがステージ３DOWNで右下から画面外に出ようとするとリトライ
+                // プレイヤーがステージ３DOWNで下から画面外に出ようとするとリトライ
                 if(Camera.main.transform.position.y == cameraStagePos[3].y &&
                    this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize)
                 {
@@ -182,42 +182,50 @@ public class BasePlayer : MonoBehaviour
                 }
                     
                 // 画面外に出た時にステージDOWNの判定を拾ったら
-                if(updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
+                if(MethodFactory.CheckOnCamera(this.gameObject))
                 {
-                    // ステージ３DOWNに移動した後のプレイヤーの座標
-                    Vector3 stage3FallAfterPos = new Vector3(
-                        this.transform.position.x,
-                        this.transform.position.y - 1.0f,
-                        this.transform.position.z
-                    );
-
-                    this.transform.DOMove(stage3FallAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
-                    .OnStart(() =>
+                    if(updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
                     {
-                        playerRigidBody.velocity = Vector2.zero;
-                    });
+                        // ステージ３DOWNに移動した後のプレイヤーの座標
+                        Vector3 stage3FallAfterPos = new Vector3(
+                            this.transform.position.x,
+                            this.transform.position.y - 1.0f,
+                            this.transform.position.z
+                        );
 
-                    return;
+                        this.transform.DOMove(stage3FallAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
+                        .OnStart(() =>
+                        {
+                            playerRigidBody.velocity = Vector2.zero;
+                        });
+
+                        return;
+                    }
                 }
+                
 
                 // 画面外に出た時にステージUPの判定を拾ったら
-                if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
+                if(MethodFactory.CheckOnCamera(this.gameObject))
                 {
-                    // ステージ３UPに移動した後のプレイヤーの座標
-                    Vector3 stage3RiseAfterPos = new Vector3(
-                        this.transform.position.x,
-                        this.transform.position.y + 1.0f,
-                        this.transform.position.z
-                    );
-
-                    this.transform.DOMove(stage3RiseAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
-                    .OnStart(() =>
+                    if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
                     {
-                        playerRigidBody.velocity = Vector2.zero;
-                    });
+                        // ステージ３UPに移動した後のプレイヤーの座標
+                        Vector3 stage3RiseAfterPos = new Vector3(
+                            this.transform.position.x,
+                            this.transform.position.y + 1.0f,
+                            this.transform.position.z
+                        );
 
-                    return;
+                        this.transform.DOMove(stage3RiseAfterPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic)
+                        .OnStart(() =>
+                        {
+                            playerRigidBody.velocity = Vector2.zero;
+                        });
+
+                        return;
+                    }
                 }
+                
 
                 if(Camera.main.transform.position.y == cameraStagePos[3].y &&
                    this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize)
@@ -505,6 +513,8 @@ public class BasePlayer : MonoBehaviour
 
         // // ステージ生成し直し
         ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
+
+        playerRigidBody.velocity = Vector2.zero;
 
         if(updateMapOpieration.Value == Enums.MapOrientation.TOP ||
            updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
