@@ -24,6 +24,7 @@ public class Enums
         STAGE_1 = 0x0000,
         STAGE_2 = 0b0001,
         STAGE_3 = 0b0010,
+        GAME_CLEAR = 0b0011
     }
 
     public enum MapOrientation
