@@ -155,12 +155,19 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(_ =>
             {
-                // プレイヤーがステージ３UPで左上のから画面外に出ようとするとリトライ
-                if(Camera.main.transform.position.y == cameraStagePos[2].y &&
-                   this.transform.position.x <= Camera.main.transform.position.x &&
-                   this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize ||
+                // プレイヤーがステージ３UPで上のから画面外に出ようとするとリトライ
+                if(Camera.main.transform.position.x == cameraStagePos[2].x &&
                    Camera.main.transform.position.y == cameraStagePos[2].y &&
-                   this.transform.position.x >= Camera.main.transform.position.x)
+                   this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize)
+                {
+                    StageRetry();
+
+                    return;
+                }
+
+                // プレイヤーがステージ３DOWNで右下から画面外に出ようとするとリトライ
+                if(Camera.main.transform.position.y == cameraStagePos[3].y &&
+                   this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize)
                 {
                     StageRetry();
 
@@ -185,10 +192,8 @@ public class BasePlayer : MonoBehaviour
 
                     return;
                 }
-                
-                
 
-                    // 画面外に出た時にステージUPの判定を拾ったら
+                // 画面外に出た時にステージUPの判定を拾ったら
                 if(updateMapOpieration.Value == Enums.MapOrientation.TOP)
                 {
                     // ステージ３UPに移動した後のプレイヤーの座標
@@ -205,7 +210,11 @@ public class BasePlayer : MonoBehaviour
                     });
 
                     return;
-                }            
+                }
+
+                if(Camera.main.transform.position.y == cameraStagePos[3].y &&
+                   this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize)
+                   return;
                 
                 StageRetry();
                
@@ -247,7 +256,6 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(x => 
             {
-                Debug.Log("fall");
                 moveToNextStage((int)Enums.MapNum.STAGE_3 + 1);
             });
 
@@ -256,7 +264,6 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(x =>
             {
-                Debug.Log("rise");
                 moveToNextStage((int)Enums.MapNum.STAGE_3);
             });
     }
@@ -472,7 +479,13 @@ public class BasePlayer : MonoBehaviour
         ObjectFactory.Instance.Map.DeleteStageObject();
 
         // // ステージ生成し直し
-         ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
+        ObjectFactory.Instance.Map.UpdateMapNum.SetValueAndForceNotify(ObjectFactory.Instance.Map.UpdateMapNum.Value);
+
+        if(updateMapOpieration.Value == Enums.MapOrientation.TOP ||
+           updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
+        {
+            updateMapOpieration.Value = Enums.MapOrientation.TOP;
+        }
     }
 
 
@@ -490,9 +503,10 @@ public class BasePlayer : MonoBehaviour
         });
 
         // ステージ３上下移動の時はリトライしない
-        // todo:条件を細分化
-        if((int)ObjectFactory.Instance.Map.UpdateMapNum.Value == (int)Enums.MapNum.STAGE_3 &&
-            this.transform.position.x <= Camera.main.transform.position.x)
+        if(updateMapOpieration.Value == Enums.MapOrientation.BOTTOM &&
+            this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize ||
+            updateMapOpieration.Value == Enums.MapOrientation.TOP &&
+            this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize)
             return;
 
         this.transform.DOMove(RetryPos, Constant.CAMERA_MOVE_TIME).SetEase(Ease.InCubic);
@@ -531,17 +545,14 @@ public class BasePlayer : MonoBehaviour
             updateMapOpieration.Value = Enums.MapOrientation.TOP;
         }
 
-        if(this.transform.position.x <= Camera.main.transform.position.x &&
-           this.transform.position.y < Camera.main.transform.position.y - Camera.main.orthographicSize &&
-           updateMapOpieration.Value == Enums.MapOrientation.TOP)
+        if(this.transform.position.y <= Camera.main.transform.position.y - Camera.main.orthographicSize &&
+           Camera.main.transform.position.x == cameraStagePos[2].x)
         {
             updateMapOpieration.Value = Enums.MapOrientation.BOTTOM;
-            return;
         }
 
-        if(this.transform.position.x <= Camera.main.transform.position.x &&
-           this.transform.position.y > Camera.main.transform.position.y + Camera.main.orthographicSize &&
-            updateMapOpieration.Value == Enums.MapOrientation.BOTTOM)
+        if(this.transform.position.y >= Camera.main.transform.position.y + Camera.main.orthographicSize &&
+            Camera.main.transform.position.y == cameraStagePos[3].y)
         {
             updateMapOpieration.Value = Enums.MapOrientation.TOP;
         }
