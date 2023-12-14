@@ -378,7 +378,7 @@ public class BasePlayer : MonoBehaviour
             .Where(x => x)
             .Subscribe(async _ => 
             {
-                
+                ObjectFactory.Instance.WarpBeat.Lr.positionCount = 0;
                 if(ability == Enums.PlayerAbility.GRAVITY)
                 {
                     ability = Enums.PlayerAbility.WARP;

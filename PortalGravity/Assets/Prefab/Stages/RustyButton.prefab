@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 705954808}
   m_Layer: 0
   m_Name: Square (1)
-  m_TagString: Button
+  m_TagString: RustyButton
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
