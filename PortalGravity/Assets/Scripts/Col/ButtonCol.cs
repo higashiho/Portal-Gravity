@@ -9,6 +9,7 @@ public class ButtonCol : MonoBehaviour
     [SerializeField, Tooltip("変化対象オブジェクト")]
     private GameObject changeTagetObj;
 
+
     private void Start()
     {
         changeTagetObj = this.gameObject.tag switch
@@ -34,7 +35,7 @@ public class ButtonCol : MonoBehaviour
                 }
             break;
             case "Barriers":
-                if(other.gameObject.tag == "GravityBox")
+                if(other.gameObject.tag == "GravityBox" && this.gameObject.activeSelf)
                 {
                     for(int i = changeTagetObj.transform.childCount - 1; i > -1; i--)
                     {

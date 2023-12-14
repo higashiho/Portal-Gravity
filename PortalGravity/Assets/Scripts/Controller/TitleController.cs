@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement; // シーン管理用のネームスペース
 
 public class TitleController : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject tipObject;
+    [SerializeField]
+    private GameObject titleObject;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +23,12 @@ public class TitleController : MonoBehaviour
         {
             // InGameSceneに移動
             SceneManager.LoadScene("InGame");
+        }
+
+        if(Input.GetKeyDown(KeyCode.Tab))
+        {
+            tipObject.SetActive(!tipObject.activeSelf);
+            titleObject.SetActive(!titleObject.activeSelf);
         }
     }
 }
